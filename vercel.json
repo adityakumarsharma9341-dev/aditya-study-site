@@ -2,7 +2,9 @@
   "rewrites": [
     { "source": "/av-app", "destination": "https://stream.aryavidya.cc/" },
     { "source": "/play.php", "destination": "https://stream.aryavidya.cc/play.php" },
-    { "source": "/:file(*.php)", "destination": "https://stream.aryavidya.cc/:file" },
+    { "source": "/download.php", "destination": "https://stream.aryavidya.cc/download.php" },
+    { "source": "/downloader.php", "destination": "https://stream.aryavidya.cc/downloader.php" },
+    { "source": "/:file(.*\\.php)", "destination": "https://stream.aryavidya.cc/:file" },
     { "source": "/assets/:path*", "destination": "https://stream.aryavidya.cc/assets/:path*" },
     { "source": "/api/:path*", "destination": "https://stream.aryavidya.cc/api/:path*" },
     { "source": "/stream/:path*", "destination": "https://stream.aryavidya.cc/stream/:path*" },
