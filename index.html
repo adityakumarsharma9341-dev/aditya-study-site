@@ -1,0 +1,4644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Aditya Study — Official Learning Portal</title>
+  <meta name="theme-color" content="#FAF7F2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+
+  <!-- ========================================================================
+       1. ANTI-IFRAME THEFT SHIELD (SAFE FOR VERCEL REWRITE & SHORTENER RETURN)
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+      var host = String(window.location.hostname || '').toLowerCase().trim();
+      var isAllowed = (
+        host === 'adityastudy.site' ||
+        host === 'www.adityastudy.site' ||
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '' ||
+        host.endsWith('.vercel.app') ||
+        host.endsWith('.netlify.app') ||
+        host.endsWith('.pages.dev') ||
+        host.endsWith('.github.io')
+      );
+
+      var framedByExternalSite = false;
+      try {
+        if (window.self !== window.top) {
+          var topH = '';
+          try { topH = String(window.top.location.hostname || '').toLowerCase(); } catch (e) { topH = 'external'; }
+          if (
+            topH !== 'adityastudy.site' &&
+            topH !== 'www.adityastudy.site' &&
+            topH !== 'localhost' &&
+            topH !== '127.0.0.1' &&
+            topH !== '' &&
+            !topH.endsWith('.vercel.app')
+          ) {
+            framedByExternalSite = true;
+          }
+        }
+      } catch (e) {
+        framedByExternalSite = true;
+      }
+
+      if (!isAllowed || framedByExternalSite) {
+        try { window.stop(); } catch (e) {}
+        document.documentElement.innerHTML =
+          '<body style="margin:0;background:#070a14;color:#ef4444;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;padding:24px;">' +
+          '<div><h2 style="margin:0 0 8px;">UNAUTHORIZED ACCESS BLOCKED</h2><p style="color:#94a3b8;font-size:13px;">Official domain adityastudy.site required.</p></div></body>';
+        throw new Error('Blocked');
+      }
+    })();
+  </script>
+
+  <!-- Fonts & Preconnects -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://stream.aryavidya.cc" crossorigin />
+  <link rel="dns-prefetch" href="https://stream.aryavidya.cc" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDK -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-app: #FAF7F2;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F4EFE6;
+      --border-light: #EAE3D5;
+      --border-med: #DCD2BE;
+      --text-main: #1C1917;
+      --text-sub: #57534E;
+      --text-muted: #78716C;
+      --gold-main: #C68B2C;
+      --gold-dark: #A8731E;
+      --gold-bg: #FEF7EA;
+      --gold-border: #EDD4A7;
+      --red-orb: #EF4444;
+      --shadow-sm: 0 2px 10px rgba(28, 25, 23, 0.04);
+      --shadow-md: 0 8px 26px rgba(28, 25, 23, 0.08);
+      --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    *, *::before, *::after, html, body, button, input, select, textarea, span, div, p, h1, h2, h3, h4, a {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans) !important;
+      font-style: normal !important;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    input, textarea {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+    }
+
+    svg {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    /* ========================================================================
+       2. BRANDED ADITYA STUDY KEY GATE + SECRET ACCESS CODE INPUT
+       ======================================================================== */
+    #keyGateOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background:
+        radial-gradient(ellipse 80% 45% at 50% -10%, rgba(99, 102, 241, 0.28) 0%, transparent 70%),
+        linear-gradient(180deg, #090D1A 0%, #05070F 100%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    #keyGateOverlay.active {
+      display: flex;
+    }
+
+    .gate-stage-one {
+      width: 100%;
+      max-width: 395px;
+      margin: auto;
+      background: linear-gradient(165deg, #131B31 0%, #0B1020 100%);
+      border: 1.5px solid rgba(99, 102, 241, 0.38);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.22);
+      border-radius: 28px;
+      padding: 36px 24px 30px;
+      text-align: center;
+      color: #FFFFFF;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(99, 102, 241, 0.22);
+    }
+
+    .gate-logo-frame {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 14px;
+      border-radius: 24px;
+      padding: 3px;
+      background: linear-gradient(135deg, #38BDF8, #6366F1, #A855F7);
+      box-shadow: 0 10px 28px rgba(99, 102, 241, 0.4);
+    }
+
+    .gate-logo-frame img {
+      width: 100%;
+      height: 100%;
+      border-radius: 21px;
+      object-fit: cover;
+      background: #FFFFFF;
+      display: block;
+    }
+
+    .gate-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.38);
+      color: #34D399;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .gate-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+    }
+
+    .gate-main-title {
+      font-size: 27px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .gate-main-sub {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+
+    .gate-open-btn {
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5);
+      transition: transform 0.14s ease;
+    }
+
+    .gate-open-btn:active {
+      transform: scale(0.96);
+    }
+
+    .gate-stage-two {
+      display: none;
+      width: 100%;
+      max-width: 405px;
+      margin: auto;
+      background: linear-gradient(165deg, #131B31 0%, #0B1020 100%);
+      border: 1.5px solid rgba(99, 102, 241, 0.42);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.24);
+      border-radius: 26px;
+      padding: 28px 22px 22px;
+      text-align: center;
+      color: #F8FAFC;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+    }
+
+    .gate-stage-two.show {
+      display: block;
+    }
+
+    .key-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+    }
+
+    .key-card-desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #CBD5E1;
+      margin-bottom: 18px;
+    }
+
+    .key-gen-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #5850EC 0%, #7C3AED 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 10px 25px rgba(88, 80, 236, 0.45);
+      transition: all 0.15s ease;
+    }
+
+    .key-gen-btn.redirecting {
+      background: linear-gradient(90deg, #10B981 0%, #059669 100%) !important;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45) !important;
+    }
+
+    .key-tut-btn {
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+    }
+
+    .secret-code-wrap {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.14);
+      text-align: left;
+    }
+
+    .secret-code-lbl {
+      font-size: 11px;
+      font-weight: 800;
+      color: #93C5FD;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .secret-code-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .secret-code-inp {
+      flex: 1;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 11px;
+      background: rgba(6, 9, 17, 0.9);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      outline: none;
+      min-width: 0;
+    }
+
+    .secret-code-inp::placeholder {
+      color: #64748B;
+      font-weight: 500;
+      letter-spacing: normal;
+    }
+
+    .secret-code-btn {
+      height: 42px;
+      padding: 0 15px;
+      border-radius: 11px;
+      background: linear-gradient(90deg, #10B981, #059669);
+      border: none;
+      color: #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.32);
+    }
+
+    .key-err-box {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #F87171;
+      min-height: 17px;
+    }
+
+    /* ========================================================================
+       3. TOP HEADER BAR
+       ======================================================================== */
+    #appShell {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+      background: var(--bg-app);
+      overflow: hidden;
+    }
+
+    .studio-header {
+      height: 60px;
+      min-height: 60px;
+      padding: 0 10px;
+      background: var(--bg-app);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      z-index: 70;
+      flex-shrink: 0;
+    }
+
+    .hdr-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .hdr-circle-btn {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.12s ease;
+    }
+
+    .hdr-circle-btn:active {
+      transform: scale(0.92);
+    }
+
+    .notif-count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #EF4444;
+      color: #FFFFFF;
+      font-size: 9.5px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-app);
+    }
+
+    .notif-count-badge.show {
+      display: inline-flex;
+    }
+
+    .hdr-brand {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .hdr-logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--gold-main);
+      background: #FFFFFF;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .hdr-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .hdr-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .hdr-timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-main);
+      font-variant-numeric: tabular-nums !important;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .hdr-timer-badge:active {
+      transform: scale(0.94);
+    }
+
+    .hdr-avatar-badge {
+      width: 33px;
+      height: 33px;
+      border-radius: 50%;
+      background: var(--gold-main);
+      color: #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ========================================================================
+       4. SEAMLESS LIVE SEARCH OVERLAY (CLEAN TEXT + PRECISION CUTOUT)
+       ======================================================================== */
+    #realSearchMaskOverlay {
+      position: absolute;
+      inset: 0;
+      z-index: 34;
+      display: none;
+      pointer-events: none;
+    }
+
+    #realSearchMaskOverlay.show {
+      display: block;
+    }
+
+    .rsm-top-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: calc(100% - 144px);
+      height: 60px;
+      background: #FAF7F2;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      padding: 0 6px 0 12px;
+      pointer-events: auto;
+      z-index: 6;
+      transition: opacity 0.12s ease;
+    }
+
+    .rsm-unified-search-shell {
+      width: 100%;
+      height: 40px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--gold-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 12px;
+      color: #57534E;
+      font-size: 12.5px;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(198, 139, 44, 0.10);
+      gap: 6px;
+    }
+
+    .rsm-tap-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--gold-bg);
+      color: var(--gold-main);
+      font-size: 10.5px;
+      font-weight: 800;
+      flex-shrink: 0;
+      animation: pulseHint 1.3s ease-in-out infinite;
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(3px); }
+    }
+
+    .rsm-center-top-cap {
+      position: absolute;
+      top: 0;
+      right: 104px;
+      width: 40px;
+      height: 11px;
+      background: #FAF7F2;
+      pointer-events: auto;
+      z-index: 6;
+    }
+
+    .rsm-center-bottom-cap {
+      position: absolute;
+      top: 49px;
+      right: 104px;
+      width: 40px;
+      height: 11px;
+      background: #FAF7F2;
+      border-bottom: 1px solid var(--border-light);
+      pointer-events: auto;
+      z-index: 6;
+    }
+
+    .rsm-top-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 104px;
+      height: 60px;
+      background: #FAF7F2;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto !important;
+      z-index: 9;
+    }
+
+    #rsmCloseSearchBtn {
+      padding: 7px 14px;
+      border-radius: 10px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-main);
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .rsm-typing-seam-guard {
+      position: absolute;
+      top: 56px;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: #FAF7F2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.12s ease;
+    }
+
+    .rsm-bottom-blur {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(28, 25, 23, 0.28);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      pointer-events: auto;
+      transition: opacity 0.12s ease;
+    }
+
+    #realSearchMaskOverlay.typing-open .rsm-top-left,
+    #realSearchMaskOverlay.typing-open .rsm-center-top-cap,
+    #realSearchMaskOverlay.typing-open .rsm-center-bottom-cap,
+    #realSearchMaskOverlay.typing-open .rsm-bottom-blur {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    #realSearchMaskOverlay.typing-open .rsm-top-right {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      width: 72px !important;
+      height: 60px !important;
+      background: #FAF7F2 !important;
+      border-bottom: none !important;
+    }
+
+    #realSearchMaskOverlay.typing-open #rsmCloseSearchBtn {
+      padding: 6px 10px !important;
+      font-size: 12px !important;
+    }
+
+    #realSearchMaskOverlay.typing-open .rsm-typing-seam-guard {
+      opacity: 1 !important;
+    }
+
+    /* ========================================================================
+       5. SIDEBAR DRAWER & DESKTOP/LAPTOP PERMANENT SIDEBAR SHIELD (>= 768px)
+       ======================================================================== */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .studio-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 265px;
+      max-width: 80vw;
+      z-index: 85;
+      background: var(--bg-app);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      transform: translate3d(-102%, 0, 0);
+      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 10px 0 35px rgba(0, 0, 0, 0.14);
+    }
+
+    .studio-drawer.open {
+      transform: translate3d(0, 0, 0);
+    }
+
+    .drawer-top-bar {
+      height: 60px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-menu-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer-nav-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .drawer-nav-item svg {
+      width: 19px;
+      height: 19px;
+      color: var(--text-muted);
+    }
+
+    .drawer-nav-item.active {
+      background: var(--gold-bg);
+      color: var(--gold-main);
+      font-weight: 700;
+    }
+
+    .drawer-nav-item.active svg {
+      color: var(--gold-main);
+    }
+
+    /* ========================================================================
+       6. STAGE & LUXURY STUDY FOCUS HUB
+       ======================================================================== */
+    .stage-wrap {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: calc(100dvh - 124px);
+      overflow: hidden !important;
+      background: var(--bg-app);
+    }
+
+    .native-stage-view {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 14px 14px 36px;
+      background: var(--bg-app);
+      display: none;
+    }
+
+    .native-stage-view.active {
+      display: block;
+    }
+
+    .home-container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .today-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 18px;
+      padding: 15px 13px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .today-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: nowrap;
+    }
+
+    .today-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .gold-bar-accent {
+      width: 4px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--gold-main);
+      flex-shrink: 0;
+    }
+
+    .section-h2 {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .focus-stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-main);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .today-tabs-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 13px;
+    }
+
+    .today-tab-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .today-tab-pill:active {
+      transform: scale(0.96);
+    }
+
+    .tab-icon-mini {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .focus-hub-box {
+      border: 1px solid var(--border-light);
+      background: linear-gradient(180deg, #FAF7F2 0%, #F3EDE2 100%);
+      border-radius: 16px;
+      padding: 15px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .focus-mode-pills {
+      display: inline-grid;
+      grid-template-columns: repeat(4, auto);
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+      margin-bottom: 12px;
+      max-width: 100%;
+    }
+
+    .focus-mode-btn {
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.14s ease;
+    }
+
+    .focus-mode-btn.active {
+      background: var(--gold-main);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(198, 139, 44, 0.28);
+    }
+
+    .focus-clock-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+
+    .focus-step-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-med);
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .focus-clock-readout {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+      font-variant-numeric: tabular-nums !important;
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      min-width: 128px;
+      text-align: center;
+    }
+
+    .focus-custom-row {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+
+    .focus-custom-row.show {
+      display: flex;
+    }
+
+    .focus-custom-inp {
+      width: 68px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gold-main);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+    }
+
+    .focus-custom-set-btn {
+      height: 32px;
+      padding: 0 11px;
+      border-radius: 8px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-main);
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .focus-sub-caption {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 13px;
+    }
+
+    .focus-ctrl-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .focus-primary-btn {
+      flex: 1.25;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: var(--gold-main);
+      color: #FFFFFF;
+      border: none;
+      font-size: 12.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(198, 139, 44, 0.28);
+    }
+
+    .focus-primary-btn.running {
+      background: #1C1917;
+    }
+
+    .focus-sec-btn {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-med);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .study-zone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 11px;
+    }
+
+    .study-zone-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .zone-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 16px 8px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.14s ease, border-color 0.14s ease;
+    }
+
+    .zone-tile:active {
+      transform: scale(0.95);
+    }
+
+    .zone-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 9px;
+    }
+
+    .zone-tile-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    /* ========================================================================
+       SINGLE MASTER IFRAME STAGE + INTERCEPTORS
+       ======================================================================== */
+    #iframesStage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+      z-index: 10;
+      background: var(--bg-app);
+    }
+
+    .stream-iframe {
+      position: absolute;
+      top: -66px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: calc(100% + 150px);
+      border: none;
+      background: var(--bg-app);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+
+    .stream-iframe.ready {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .stream-iframe.search-mode-active {
+      top: 0px !important;
+      height: calc(100% + 84px) !important;
+    }
+
+    #bottomStageGuard {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 22px;
+      background: var(--bg-app);
+      z-index: 22;
+      pointer-events: none;
+    }
+
+    #invisibleBreadcrumbHomeCatcher {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 112px;
+      height: 70px;
+      z-index: 26;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+
+    #invisibleBreadcrumbHomeCatcher.show {
+      display: block;
+    }
+
+    #favBrowseInterceptor {
+      position: absolute;
+      top: 308px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 190px;
+      height: 56px;
+      z-index: 26;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+
+    #favBrowseInterceptor.show {
+      display: block;
+    }
+
+    /* ========================================================================
+       VIDEO PLAYER ACTIVE MODE
+       ======================================================================== */
+    body.video-player-active .studio-header,
+    body.video-player-active .studio-bottom-bar,
+    body.video-player-active #bottomStageGuard,
+    body.video-player-active #invisibleBreadcrumbHomeCatcher,
+    body.video-player-active #favBrowseInterceptor,
+    body.video-player-active #iframeCommShield,
+    body.video-player-active #realSearchMaskOverlay {
+      display: none !important;
+    }
+
+    body.video-player-active .studio-drawer {
+      transform: translate3d(-105%, 0, 0) !important;
+    }
+
+    body.video-player-active .stage-wrap {
+      margin-left: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      background: #000000 !important;
+    }
+
+    body.video-player-active .stream-iframe {
+      top: 0px !important;
+      left: 0px !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      background: #000000 !important;
+    }
+
+    #videoBackExitHotspot {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      height: 38px;
+      padding: 0 14px 0 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-size: 12px;
+      font-weight: 800;
+      z-index: 9300;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    body.video-player-active #videoBackExitHotspot {
+      display: inline-flex;
+    }
+
+    /* ========================================================================
+       1-CLICK PASS-THROUGH COMMUNITY POPUP SHIELD
+       ======================================================================== */
+    #iframeCommShield {
+      position: absolute;
+      inset: 0;
+      z-index: 38;
+      background: rgba(18, 16, 14, 0.56);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none !important;
+    }
+
+    #iframeCommShield.show {
+      display: flex;
+    }
+
+    .ifs-card {
+      position: relative;
+      width: 356px;
+      max-width: 92vw;
+      min-height: 244px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-med);
+      border-radius: 22px;
+      padding: 20px 20px 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 8px var(--bg-card);
+      transform: translateY(8px);
+      pointer-events: none !important;
+    }
+
+    .ifs-pass-close-x {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      color: var(--text-sub);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      pointer-events: none !important;
+    }
+
+    #ifsJoinTgBtn {
+      width: 100%;
+      height: 52px;
+      border-radius: 12px;
+      background: #0098EA;
+      color: #FFFFFF;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 152, 234, 0.35);
+      pointer-events: auto !important;
+    }
+
+    .ifs-pass-maybe-later {
+      width: 100%;
+      padding: 8px 0 2px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      pointer-events: none !important;
+    }
+
+    /* TABLET / LAPTOP / PC DESKTOP MODE SHIELD (>= 768px) */
+    @media (min-width: 768px) {
+      body:not(.video-player-active) .studio-drawer {
+        transform: translate3d(0, 0, 0) !important;
+        width: 245px !important;
+        z-index: 62 !important;
+      }
+      .drawer-backdrop, #hdrMenuBtn, #drawerCloseBtn {
+        display: none !important;
+      }
+      body:not(.video-player-active) .studio-header,
+      body:not(.video-player-active) .stage-wrap,
+      body:not(.video-player-active) .studio-bottom-bar {
+        margin-left: 245px !important;
+        width: calc(100vw - 245px) !important;
+      }
+      body:not(.video-player-active) .stream-iframe {
+        left: -232px !important;
+        width: calc(100% + 232px) !important;
+      }
+      .ifs-card {
+        width: 364px !important;
+        min-height: 248px !important;
+        transform: translate(-116px, 8px) !important;
+      }
+      .rsm-top-left {
+        width: calc(100% - 144px) !important;
+      }
+    }
+
+    /* ========================================================================
+       7. LOADER, BOTTOM BAR, NOTIFICATIONS & ADMIN MODAL
+       ======================================================================== */
+    #stageLoader {
+      position: absolute;
+      inset: 0;
+      z-index: 45;
+      background: var(--bg-app);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    #stageLoader.show {
+      display: flex;
+    }
+
+    .spinner-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 3.5px solid var(--border-light);
+      border-top-color: var(--gold-main);
+      animation: spinLoader 0.72s linear infinite;
+    }
+
+    .loader-brand-text {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+
+    @keyframes spinLoader {
+      to { transform: rotate(360deg); }
+    }
+
+    .studio-bottom-bar {
+      height: 64px;
+      min-height: 64px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-light);
+      display: grid;
+      grid-template-columns: 1fr 1fr 76px 1fr 1fr;
+      align-items: center;
+      padding: 0 8px env(safe-area-inset-bottom, 0px);
+      z-index: 65;
+      flex-shrink: 0;
+      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .bnav-btn {
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .bnav-btn.active {
+      color: var(--gold-main);
+    }
+
+    .bnav-center-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .bnav-home-orb {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #9CA3AF;
+      color: #FFFFFF;
+      border: 4px solid var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+      transition: all 0.2s ease;
+    }
+
+    .bnav-home-orb.active {
+      background: var(--red-orb);
+      box-shadow: 0 8px 22px rgba(239, 68, 68, 0.42);
+    }
+
+    .bnav-home-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--red-orb);
+      margin-top: 2px;
+      opacity: 0;
+    }
+
+    .bnav-home-orb.active + .bnav-home-dot {
+      opacity: 1;
+    }
+
+    .notif-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9500;
+      background: rgba(28, 25, 23, 0.52);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .notif-backdrop.show {
+      display: flex;
+    }
+
+    .notif-sheet {
+      width: 100%;
+      max-width: 450px;
+      max-height: 86dvh;
+      margin: auto;
+      background: var(--bg-app);
+      border: 1px solid var(--border-med);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .notif-head {
+      padding: 15px 16px 11px;
+      background: var(--bg-app);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .notif-subhead {
+      padding: 0 16px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .notif-filter-strip {
+      padding: 0 16px 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border-light);
+      scrollbar-width: none;
+    }
+
+    .notif-filter-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .notif-tab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-sub);
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .notif-tab-pill.active {
+      background: #1C1917;
+      border-color: #1C1917;
+      color: #FFFFFF;
+    }
+
+    .notif-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .notif-rich-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 13px;
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .notif-rich-card.unread {
+      border-left: 3.5px solid var(--gold-main);
+    }
+
+    .notif-icon-sq {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-item-img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 8px;
+      border: 1px solid var(--border-light);
+    }
+
+    .notif-foot {
+      padding: 12px 16px;
+      background: var(--bg-app);
+      border-top: 1px solid var(--border-light);
+      text-align: center;
+    }
+
+    .admin-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100dvh;
+      z-index: 10000;
+      background: rgba(7, 10, 19, 0.86);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .admin-backdrop.show {
+      display: flex;
+    }
+
+    .admin-card {
+      width: 100%;
+      max-width: 510px;
+      max-height: 90dvh;
+      margin: auto;
+      overflow-y: auto;
+      background: linear-gradient(165deg, #111827 0%, #070B14 100%);
+      border: 1.5px solid rgba(99, 102, 241, 0.45);
+      border-radius: 24px;
+      padding: 18px 15px;
+      color: #F8FAFC;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.94);
+      position: relative;
+    }
+
+    .adm-tabs-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .adm-tab-btn {
+      padding: 8px 4px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: #94A3B8;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .adm-tab-btn.active {
+      background: linear-gradient(90deg, #4F46E5, #7C3AED);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .adm-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .adm-lbl {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: #93C5FD;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .adm-field {
+      width: 100%;
+      background: #060911;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #FFFFFF;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    #studioToast {
+      position: fixed;
+      bottom: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      z-index: 10005;
+      background: #18181B;
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s ease;
+      white-space: nowrap;
+    }
+
+    #studioToast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<!-- ==================== PASTE PART 2 DIRECTLY BELOW THIS LINE ==================== -->
+<body>
+
+  <!-- Bottom Toast -->
+  <div id="studioToast">Action Completed</div>
+
+  <!-- Prominent Top-Left "← Back" Pill during Fullscreen Video Playback -->
+  <button type="button" id="videoBackExitHotspot" aria-label="Back to Lectures" title="Back to Lectures">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    <span>Back</span>
+  </button>
+
+  <!-- ========================================================================
+       SCREEN 1: BRANDED KEY GATE + SECRET ACCESS CODE UNLOCK
+       ======================================================================== -->
+  <section id="keyGateOverlay">
+    <!-- Stage 1: Open Now Splash -->
+    <div class="gate-stage-one" id="vedOpenStage">
+      <div class="gate-logo-frame">
+        <img
+          src="logo.png"
+          alt="Aditya Study"
+          class="app-logo-img"
+          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 rx=%2226%22 fill=%22%230b1022%22/><path d=%22M60 22L92 94H74L67 76H53L46 94H28L60 22ZM60 46L54 63H66L60 46Z%22 fill=%22%236366f1%22/></svg>';"
+        />
+      </div>
+      <div class="gate-status-chip">
+        <span class="gate-status-dot"></span>
+        <span>Official Study Portal</span>
+      </div>
+      <h1 class="gate-main-title">Aditya Study</h1>
+      <p class="gate-main-sub">Access all live &amp; recorded PW batches, test series, Khazana lectures &amp; PDF notes.</p>
+      <button type="button" class="gate-open-btn" id="vedOpenBtn">
+        <span>Open Now</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Stage 2: Generate Access Key & Secret Code -->
+    <div class="gate-stage-two" id="testukKeyCard">
+      <div class="gate-logo-frame" style="width:66px;height:66px;border-radius:18px;margin-bottom:12px;">
+        <img
+          src="logo.png"
+          alt="Aditya Study"
+          class="app-logo-img"
+          style="border-radius:15px;"
+          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 rx=%2226%22 fill=%22%230b1022%22/><path d=%22M60 22L92 94H74L67 76H53L46 94H28L60 22ZM60 46L54 63H66L60 46Z%22 fill=%22%236366f1%22/></svg>';"
+        />
+      </div>
+      <div class="key-card-head">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+        <span>Generate Access Key</span>
+      </div>
+      <p class="key-card-desc">
+        Click below to generate your <b>Access Key</b>, or enter a valid <b>Access Code</b> provided by Admin for instant unlock.
+      </p>
+
+      <button type="button" class="key-gen-btn" id="genKeyBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span id="genKeyBtnLabel">Generate Access Key</span>
+      </button>
+
+      <button type="button" class="key-tut-btn" id="howKeyBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <span>How to Generate Key</span>
+      </button>
+
+      <div class="secret-code-wrap" id="secretCodeBoxWrap">
+        <label class="secret-code-lbl">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Have an Access Code?</span>
+        </label>
+        <div class="secret-code-row">
+          <input
+            type="text"
+            id="studentSecretCodeInp"
+            class="secret-code-inp"
+            placeholder="Enter Secret Access Code..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" class="secret-code-btn" id="studentSecretCodeBtn">Unlock</button>
+        </div>
+      </div>
+
+      <div class="key-err-box" id="keyGateErr"></div>
+
+      <div style="margin-top:14px;padding-top:11px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;font-size:11px;color:#64748B;">
+        <span id="gateValidityFootLbl">Valid for 25 Hours</span>
+        <span id="gateAdminOpenLink" style="cursor:pointer;color:#94A3B8;font-weight:700;">Admin Panel</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SCREEN 2: MAIN STUDIO APP SHELL
+       ======================================================================== -->
+  <div id="appShell">
+    <header class="studio-header">
+      <div class="hdr-left">
+        <button type="button" class="hdr-circle-btn" id="hdrMenuBtn" aria-label="Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </button>
+        <div class="hdr-brand" id="hdrBrandHome">
+          <img
+            src="logo.png"
+            alt="Aditya Study"
+            class="hdr-logo app-logo-img"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 rx=%2226%22 fill=%22%230b1022%22/><path d=%22M60 22L92 94H74L67 76H53L46 94H28L60 22ZM60 46L54 63H66L60 46Z%22 fill=%22%236366f1%22/></svg>';"
+          />
+          <span class="hdr-title">Aditya Study</span>
+        </div>
+      </div>
+
+      <div class="hdr-right">
+        <!-- Clickable Timer Pill (Opens Key Status & Reset Modal on Tap) -->
+        <button type="button" class="hdr-timer-badge" id="hdrKeyTimerBadge" title="Tap to View or Reset Access Key">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="hdrKeyTimerVal">25:00:00</span>
+        </button>
+
+        <button type="button" class="hdr-circle-btn" id="hdrSearchBtn" aria-label="Search" title="Search Batches">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+
+        <button type="button" class="hdr-circle-btn" id="hdrNotifBtn" aria-label="Notifications" title="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-count-badge" id="hdrNotifBadge">0</span>
+        </button>
+
+        <div class="hdr-avatar-badge" id="hdrAdminAvatar" title="Admin Panel">A</div>
+      </div>
+    </header>
+
+    <!-- Left Sidebar Drawer -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="studio-drawer" id="studioDrawer">
+      <div class="drawer-top-bar">
+        <div class="hdr-brand">
+          <img
+            src="logo.png"
+            alt="Aditya Study"
+            class="hdr-logo app-logo-img"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 rx=%2226%22 fill=%22%230b1022%22/><path d=%22M60 22L92 94H74L67 76H53L46 94H28L60 22ZM60 46L54 63H66L60 46Z%22 fill=%22%236366f1%22/></svg>';"
+          />
+          <span class="hdr-title">Aditya Study</span>
+        </div>
+        <button type="button" class="hdr-circle-btn" id="drawerCloseBtn" style="width:32px;height:32px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <nav class="drawer-menu-list" id="drawerMenuMount"></nav>
+    </aside>
+
+    <!-- Main Stage -->
+    <main class="stage-wrap">
+      <!-- Full-Cover Branded Loader -->
+      <div id="stageLoader">
+        <div class="spinner-ring"></div>
+        <div class="loader-brand-text" id="stageLoaderText">Loading Aditya Study...</div>
+      </div>
+
+      <!-- Top-Left Breadcrumb "Home >" Catcher -->
+      <button type="button" id="invisibleBreadcrumbHomeCatcher" aria-label="Return Home"></button>
+
+      <!-- Favorites [Browse Batches] Interceptor -->
+      <button type="button" id="favBrowseInterceptor" aria-label="Explore All Batches"></button>
+
+      <!-- ====================================================================
+           SEAMLESS LIVE SEARCH OVERLAY (#FAF7F2 UNIFIED BAR)
+           Clean uncut prompt text + full width input reveal when typing
+           ==================================================================== -->
+      <div id="realSearchMaskOverlay">
+        <div class="rsm-top-left" id="rsmTopLeftShell">
+          <div class="rsm-unified-search-shell">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Search batches, exams...</span>
+            <span class="rsm-tap-badge">
+              <span>Tap</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="rsm-center-top-cap"></div>
+        <div class="rsm-center-bottom-cap"></div>
+        <div class="rsm-top-right">
+          <button type="button" id="rsmCloseSearchBtn">Done</button>
+        </div>
+        <div class="rsm-typing-seam-guard"></div>
+        <div class="rsm-bottom-blur" id="rsmBottomBlur"></div>
+      </div>
+
+      <!-- ====================================================================
+           1-CLICK PASS-THROUGH COMMUNITY POPUP SHIELD
+           ==================================================================== -->
+      <div id="iframeCommShield">
+        <div class="ifs-card" id="ifsCardInner">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:18px;font-weight:800;color:var(--text-main);">Join Community</span>
+            <span class="ifs-pass-close-x">✕</span>
+          </div>
+
+          <p style="font-size:13px;color:var(--text-sub);line-height:1.55;text-align:left;margin-bottom:14px;">
+            Get instant batch updates, lecture notes, DPP PDFs and live class alerts on our official Aditya Study Telegram channel.
+          </p>
+
+          <button type="button" id="ifsJoinTgBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Join Aditya Study Telegram</span>
+          </button>
+
+          <div class="ifs-pass-maybe-later">
+            Maybe later
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           NATIVE STUDIO HOME VIEW (PRO FOCUS TIMER + MY STUDY ZONE)
+           ==================================================================== -->
+      <div id="studioHomeView" class="native-stage-view active">
+        <div class="home-container">
+          <!-- 1. Study Command Center -->
+          <div class="today-card">
+            <div class="today-head">
+              <div class="today-title-wrap">
+                <span class="gold-bar-accent"></span>
+                <h2 class="section-h2">Study Command Center</h2>
+              </div>
+              <span class="focus-stat-pill" id="focusTodayStatBadge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span id="focusTodayStatText">Today: 0m</span>
+              </span>
+            </div>
+
+            <!-- 4 Quick Launch Pills -->
+            <div class="today-tabs-strip">
+              <button type="button" class="today-tab-pill" data-nav="batches">
+                <span class="tab-icon-mini" style="background:rgba(239,68,68,0.12);color:#EF4444;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </span>
+                <span>Batches</span>
+              </button>
+
+              <button type="button" class="today-tab-pill" id="homeQuickSearchPill">
+                <span class="tab-icon-mini" style="background:rgba(59,130,246,0.12);color:#3B82F6;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <span>Search</span>
+              </button>
+
+              <button type="button" class="today-tab-pill" data-nav="pdfbank">
+                <span class="tab-icon-mini" style="background:rgba(16,185,129,0.12);color:#059669;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </span>
+                <span>PDF Bank</span>
+              </button>
+
+              <button type="button" class="today-tab-pill" id="todayNotesNotifBtn">
+                <span class="tab-icon-mini" style="background:rgba(245,158,11,0.14);color:#D97706;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </span>
+                <span>Updates</span>
+              </button>
+            </div>
+
+            <!-- Pro Focus Timer Box -->
+            <div class="focus-hub-box">
+              <div class="focus-mode-pills">
+                <button type="button" class="focus-mode-btn active" data-fmode="25">25m Focus</button>
+                <button type="button" class="focus-mode-btn" data-fmode="50">50m Deep</button>
+                <button type="button" class="focus-mode-btn" data-fmode="custom">Custom</button>
+                <button type="button" class="focus-mode-btn" data-fmode="0">Stopwatch</button>
+              </div>
+
+              <div class="focus-clock-stage">
+                <button type="button" class="focus-step-btn" id="focusMinus5Btn" title="Decrease 5 Minutes">-5m</button>
+                <div class="focus-clock-readout" id="focusClockDisplay">25:00</div>
+                <button type="button" class="focus-step-btn" id="focusPlus5Btn" title="Increase 5 Minutes">+5m</button>
+              </div>
+
+              <div class="focus-custom-row" id="focusCustomRow">
+                <input
+                  type="number"
+                  id="focusCustomMinInp"
+                  class="focus-custom-inp"
+                  min="1"
+                  max="360"
+                  value="45"
+                  placeholder="Mins"
+                />
+                <button type="button" class="focus-custom-set-btn" id="focusCustomApplyBtn">Set Minutes</button>
+              </div>
+
+              <div class="focus-sub-caption" id="focusStatusCaption">Dedicated lecture &amp; DPP focus session</div>
+
+              <div class="focus-ctrl-row">
+                <button type="button" class="focus-primary-btn" id="focusToggleBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                  <span id="focusToggleBtnLabel">Start Focus</span>
+                </button>
+                <button type="button" class="focus-sec-btn" id="focusResetBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Reset</span>
+                </button>
+                <button type="button" class="focus-sec-btn" data-nav="batches">
+                  <span>Lectures</span>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. My Study Zone -->
+          <div class="study-zone-header">
+            <h2 class="section-h2">My Study Zone</h2>
+          </div>
+          <div class="study-zone-grid" id="studyZoneMount"></div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           NATIVE DOWNLOADS VIEW
+           ==================================================================== -->
+      <div id="studioDownloadsView" class="native-stage-view">
+        <div class="home-container">
+          <div class="today-card" style="padding:18px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <h2 style="font-size:17px;font-weight:800;color:var(--text-main);">Downloaded Videos</h2>
+              <span style="padding:3px 9px;border-radius:999px;background:rgba(16,185,129,0.12);color:#059669;font-size:10.5px;font-weight:800;">● Offline Ready</span>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#475569;margin-bottom:14px;">
+              <span style="color:#0284C7;font-weight:800;" id="dlCountLabel">0/5 limits (5 remaining)</span>
+              <span id="dlStorageLabel"> | 0 MB used (Free: 10 GB)</span>
+            </div>
+            <div id="dlVideosMount" style="border:1px solid var(--border-light);background:var(--bg-app);border-radius:12px;padding:26px 14px;text-align:center;color:#94A3B8;font-size:13px;font-weight:600;">
+              No videos downloaded yet. Open any lecture and tap the Download (⬇) icon inside the player to save offline.
+            </div>
+          </div>
+
+          <div class="today-card" style="padding:18px 16px;">
+            <div class="today-head" style="margin-bottom:10px;">
+              <div class="today-title-wrap">
+                <span class="gold-bar-accent"></span>
+                <h2 class="section-h2">Offline PDF &amp; Lecture Hub</h2>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-sub);line-height:1.5;margin-bottom:14px;">
+              Access chapter-wise Mindmaps, Short Notes, Formula Sheets, and recently watched batch lectures anytime.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <button type="button" class="sched-gold-btn" data-nav="pdfbank" style="width:100%;padding:11px;background:var(--gold-main);color:#fff;border:none;border-radius:11px;">
+                Open PDF Bank
+              </button>
+              <button type="button" class="sched-gold-btn" data-nav="history" style="width:100%;padding:11px;border-radius:11px;">
+                Recent Lectures
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Single Master Iframe Stage + 22px Bottom Safety Guard -->
+      <div id="iframesStage"></div>
+      <div id="bottomStageGuard"></div>
+    </main>
+
+    <!-- Full-Width Docked Bottom Bar -->
+    <nav class="studio-bottom-bar">
+      <button type="button" class="bnav-btn" data-bnav="downloads">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Downloads</span>
+      </button>
+
+      <button type="button" class="bnav-btn" id="bnavSearchBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Search</span>
+      </button>
+
+      <div class="bnav-center-col">
+        <button type="button" class="bnav-home-orb active" id="bnavHomeOrb" data-bnav="home" aria-label="Home">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3l9-8z"/></svg>
+        </button>
+        <span class="bnav-home-dot"></span>
+      </div>
+
+      <button type="button" class="bnav-btn" data-bnav="batches">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>Batches</span>
+      </button>
+
+      <button type="button" class="bnav-btn" id="bnavTelegramBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span>Telegram</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 1: ACCESS KEY STATUS & RESET MODAL
+       ======================================================================== -->
+  <div class="notif-backdrop" id="keyResetModalBackdrop">
+    <div class="notif-sheet" style="max-width:370px;padding:22px 18px 18px;text-align:center;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-main)" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="font-size:16px;font-weight:800;color:var(--text-main);">Access Key Status</span>
+        </div>
+        <button type="button" id="keyResetCloseX" class="hdr-circle-btn" style="width:30px;height:30px;">✕</button>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:16px;padding:16px 12px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Time Remaining</div>
+        <div id="keyResetModalClock" style="font-variant-numeric:tabular-nums !important;font-size:28px;font-weight:800;color:var(--gold-main);">25:00:00</div>
+        <div style="font-size:11.5px;color:#059669;font-weight:700;margin-top:4px;">● Active Session</div>
+      </div>
+
+      <p style="font-size:12.5px;color:var(--text-sub);line-height:1.5;margin-bottom:16px;">
+        Want to reset your current session and return to the <b>Generate Access Key</b> screen?
+      </p>
+
+      <button type="button" id="confirmResetKeyBtn" style="width:100%;padding:13px;border-radius:12px;background:linear-gradient(90deg,#EF4444,#DC2626);color:#fff;border:none;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(239,68,68,0.32);margin-bottom:8px;">
+        Reset Key &amp; Generate Again
+      </button>
+
+      <button type="button" id="cancelResetKeyBtn" style="width:100%;padding:10px;border-radius:11px;background:var(--bg-subtle);border:1px solid var(--border-med);color:var(--text-main);font-size:12.5px;font-weight:800;cursor:pointer;">
+        Keep Current Key
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: UPGRADED NOTIFICATION CENTER
+       ======================================================================== -->
+  <div class="notif-backdrop" id="notifModalBackdrop">
+    <div class="notif-sheet">
+      <div class="notif-head">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-main)" stroke-width="2.3"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="font-size:16.5px;font-weight:800;color:var(--text-main);">Notifications</span>
+          <span id="notifModalCountPill" style="padding:2px 8px;border-radius:999px;background:rgba(239,68,68,0.12);color:#EF4444;font-size:11px;font-weight:800;">New</span>
+        </div>
+        <button type="button" id="notifCloseX" class="hdr-circle-btn" style="width:30px;height:30px;">✕</button>
+      </div>
+
+      <div class="notif-subhead">
+        <span style="display:inline-flex;align-items:center;gap:5px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Recent updates &amp; alerts</span>
+        </span>
+        <button type="button" id="notifMarkAllReadBtn" style="background:none;border:none;color:var(--gold-main);font-size:11.5px;font-weight:800;cursor:pointer;">✓ Mark all read</button>
+      </div>
+
+      <div class="notif-filter-strip" id="notifFilterStrip">
+        <button type="button" class="notif-tab-pill active" data-nfilter="all">All</button>
+        <button type="button" class="notif-tab-pill" data-nfilter="Announcement">📢 Announcements</button>
+        <button type="button" class="notif-tab-pill" data-nfilter="Class">🎥 Live Classes</button>
+        <button type="button" class="notif-tab-pill" data-nfilter="Test">📝 Tests</button>
+      </div>
+
+      <div class="notif-body" id="notifListMount"></div>
+
+      <div class="notif-foot">
+        <button type="button" id="notifDoneBtn" style="width:100%;padding:11px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border-med);color:var(--text-main);font-size:13px;font-weight:800;cursor:pointer;">
+          Done / Close ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 3: UPGRADED MASTER ADMIN CONTROL PANEL
+       ======================================================================== -->
+  <div class="admin-backdrop" id="adminBackdrop"></div>
+<!-- ==================== PASTE PART 3 DIRECTLY BELOW THIS LINE ==================== -->
+  <!-- ========================================================================
+       PART 3: MASTER ENGINE v28.0 (DIRECT VERCEL REWRITE + SAME-ORIGIN VIDEO HOOK + UNCUT SEARCH)
+       ======================================================================== -->
+  <script>
+    (function __ADITYA_STUDIO_ENGINE_V28__() {
+      'use strict';
+
+      // 1. TRUE LOGO.PNG LOADER (Never overrides logo.png unless file is actually missing)
+      var EMBEDDED_LOGO_URI = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">' +
+        '<rect width="120" height="120" rx="26" fill="#0B1022"/>' +
+        '<path d="M60 22L92 94H74L67 76H53L46 94H28L60 22ZM60 46L54 63H66L60 46Z" fill="#6366F1"/>' +
+        '</svg>'
+      );
+
+      function initLogoImages(root) {
+        (root || document).querySelectorAll('img.app-logo-img').forEach(function (img) {
+          img.onerror = function () {
+            if (this.src !== EMBEDDED_LOGO_URI) this.src = EMBEDDED_LOGO_URI;
+          };
+          if (!img.getAttribute('src')) {
+            img.src = 'logo.png';
+          }
+        });
+      }
+
+      // 2. PURE VECTOR SVG ICONS
+      var VECTOR_ICONS = {
+        dashboard: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+        mybatches: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C68B2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+        allbatches: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+        search: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+        pdfbank: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+        history: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>',
+        telegram: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+        downloads: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+        settings: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',
+        heart: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+        shield: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+      };
+
+      // 3. CLEAN SAME-ORIGIN ROUTE BUILDER (/av-app#/batches — No trailing slash before #, zero 404!)
+      function decodeStreamRoute(arr, suffix) {
+        var out = '';
+        for (var i = 0; i < arr.length; i++) {
+          out += String.fromCharCode(arr[i] - 7);
+        }
+        return out + (suffix || '');
+      }
+
+      var STREAM_ROOT = [111,123,123,119,122,65,54,54,122,123,121,108,104,116,53,104,121,128,104,125,112,107,128,104,53,106,106];
+
+      var isLocalPreview = (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname === '' ||
+        window.location.protocol === 'file:'
+      );
+
+      var useSameOriginProxy = !isLocalPreview;
+
+      function getStreamUrl(hashSuffix) {
+        var cleanHash = String(hashSuffix || '').replace(/^\/+/, ''); // turns '/#/batches' into '#/batches'
+        if (useSameOriginProxy && (!adminConfig || adminConfig.useVercelProxy !== false)) {
+          return '/av-app' + (cleanHash ? (cleanHash.charAt(0) === '#' ? cleanHash : '/' + cleanHash) : '');
+        }
+        return decodeStreamRoute(STREAM_ROOT, hashSuffix || '');
+      }
+
+      // 4. CREDENTIALS & STORAGE KEYS
+      var ADMIN_USER = 'aadiixco@gmail.com';
+      var ADMIN_PASS = 'spideyxaadi@gmail.com';
+
+      var KEY_ADMIN_CFG             = 'asp_v28_admin_cfg';
+      var KEY_SESSION_24            = 'asp_v28_key_session';
+      var KEY_HANDSHAKE             = 'asp_v28_handshake';
+      var KEY_ADMIN_AUTH            = 'asp_v28_admin_authed_perm';
+      var KEY_SEEN_NOTIF_IDS        = 'asp_v28_seen_notif_ids';
+      var KEY_IFRAME_COMM_DISMISSED = 'asp_v28_iframe_comm_dismissed';
+      var KEY_STUDY_MINS_TODAY      = 'asp_v28_study_mins_' + new Date().toISOString().slice(0, 10);
+
+      var NTFY_TOPIC    = 'aditya_study_v28_live_ping_9918';
+      var FIRESTORE_URL = 'https://firestore.googleapis.com/v1/projects/aditya-study/databases/(default)/documents/asp_portal_v28/global_config';
+
+      var bcChannel = null;
+      try {
+        if (typeof BroadcastChannel !== 'undefined') {
+          bcChannel = new BroadcastChannel('aditya_study_v28_bc');
+        }
+      } catch (e) {}
+
+      // 5. GLOBAL ADMIN STATE
+      var adminConfig = {
+        versionTs: 1,
+        useVercelProxy: true,
+        keySystemEnabled: true,
+        secretCodeEnabled: true,
+        secretAccessCode: 'ADITYA25',
+        secretCodeEpoch: 1,
+        shortenerUrl: 'https://vplink.in/j4Jnh',
+        tutorialUrl: 'https://t.me/+KcG_R4Wg1J0zMDA1',
+        telegramUrl: 'https://t.me/+KcG_R4Wg1J0zMDA1',
+        minWaitSeconds: 15,
+        keyValidityHours: 25,
+        keyEpochVersion: 1,
+        globalMaintenance: false,
+        showWelcomePopup: true,
+        notifications: [
+          {
+            id: 'welcome_1',
+            title: 'Welcome to Aditya Study!',
+            body: 'Explore all batch repositories, live test series, DPP quizzes, and study resources.',
+            image: '',
+            link: '',
+            category: 'Announcement',
+            tag: 'Announcement',
+            time: 'Just now'
+          },
+          {
+            id: 'tg_join_2',
+            title: 'Join our Telegram Community',
+            body: 'Connect with fellow students for doubts, study material, and instant updates.',
+            image: '',
+            link: 'https://t.me/+KcG_R4Wg1J0zMDA1',
+            category: 'Announcement',
+            tag: 'Announcement',
+            time: 'Pinned'
+          }
+        ],
+        routeOverrides: {},
+        customRoutes: {}
+      };
+
+      // 6. MASTER ROUTES CONFIGURATION
+      function buildDefaultRoutes() {
+        return {
+          home: {
+            id: 'home',
+            label: 'Dashboard',
+            hashPath: '#/home',
+            icon: 'dashboard',
+            native: true,
+            inStudyZone: false,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          favorites: {
+            id: 'favorites',
+            label: 'My Batches',
+            drawerLabel: 'Favorites',
+            hashPath: '#/my-batches',
+            url: getStreamUrl('/#/favorites'),
+            icon: 'mybatches',
+            drawerIcon: 'heart',
+            cropTop: 66,
+            inStudyZone: true,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          batches: {
+            id: 'batches',
+            label: 'All Batches',
+            hashPath: '#/batches',
+            url: getStreamUrl('/#/batches'),
+            icon: 'allbatches',
+            cropTop: 66,
+            inStudyZone: true,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          search: {
+            id: 'search',
+            label: 'Search Batches',
+            hashPath: '#/search',
+            icon: 'search',
+            isSearchTrigger: true,
+            inStudyZone: true,
+            inDrawer: false,
+            hidden: false,
+            maintenance: false
+          },
+          pdfbank: {
+            id: 'pdfbank',
+            label: 'PDF Bank',
+            hashPath: '#/pdf-bank',
+            url: getStreamUrl('/#/pdf-bank'),
+            icon: 'pdfbank',
+            cropTop: 66,
+            inStudyZone: true,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          history: {
+            id: 'history',
+            label: 'My History',
+            drawerLabel: 'History',
+            hashPath: '#/history',
+            url: getStreamUrl('/#/history'),
+            icon: 'history',
+            cropTop: 66,
+            inStudyZone: true,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          telegram: {
+            id: 'telegram',
+            label: 'Telegram',
+            hashPath: '#/telegram',
+            url: 'https://t.me/+KcG_R4Wg1J0zMDA1',
+            icon: 'telegram',
+            external: true,
+            inStudyZone: true,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          downloads: {
+            id: 'downloads',
+            label: 'Downloads',
+            hashPath: '#/downloads',
+            icon: 'downloads',
+            native: true,
+            inStudyZone: false,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          },
+          settings: {
+            id: 'settings',
+            label: 'Settings',
+            hashPath: '#/settings',
+            url: getStreamUrl('/#/settings'),
+            icon: 'settings',
+            cropTop: 66,
+            inStudyZone: false,
+            inDrawer: true,
+            hidden: false,
+            maintenance: false
+          }
+        };
+      }
+
+      var STUDY_ZONE_ORDER  = ['favorites', 'batches', 'search', 'pdfbank', 'history', 'telegram'];
+      var DRAWER_MENU_ORDER = ['home', 'favorites', 'batches', 'pdfbank', 'history', 'telegram', 'downloads', 'settings'];
+
+      var routes = buildDefaultRoutes();
+
+      function loadAdminState() {
+        try {
+          var raw = localStorage.getItem(KEY_ADMIN_CFG);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              adminConfig = Object.assign({}, adminConfig, parsed);
+              adminConfig.routeOverrides = parsed.routeOverrides || {};
+              adminConfig.customRoutes = parsed.customRoutes || {};
+              if (!Array.isArray(adminConfig.notifications)) {
+                adminConfig.notifications = [];
+              }
+            }
+          }
+        } catch (e) {}
+        applyOverridesToRoutes();
+        syncSecretCodeBoxVisibility();
+      }
+
+      function syncSecretCodeBoxVisibility() {
+        var wrap = document.getElementById('secretCodeBoxWrap');
+        if (wrap) {
+          wrap.style.display = adminConfig.secretCodeEnabled ? 'block' : 'none';
+        }
+        var footLbl = document.getElementById('gateValidityFootLbl');
+        if (footLbl) {
+          footLbl.textContent = 'Valid for ' + (Number(adminConfig.keyValidityHours) || 25) + ' Hours';
+        }
+      }
+
+      function applyOverridesToRoutes() {
+        routes = buildDefaultRoutes();
+        if (adminConfig.telegramUrl) {
+          routes.telegram.url = adminConfig.telegramUrl;
+        }
+
+        if (adminConfig.customRoutes && typeof adminConfig.customRoutes === 'object') {
+          Object.keys(adminConfig.customRoutes).forEach(function (cid) {
+            var cr = adminConfig.customRoutes[cid];
+            if (cr && cr.id) {
+              routes[cr.id] = Object.assign({
+                id: cr.id,
+                label: cr.label || cr.id,
+                hashPath: '#/' + cr.id,
+                url: cr.url,
+                icon: 'allbatches',
+                cropTop: typeof cr.cropTop === 'number' ? cr.cropTop : 66,
+                inStudyZone: true,
+                inDrawer: true,
+                hidden: !!cr.hidden,
+                maintenance: !!cr.maintenance
+              }, cr);
+              if (STUDY_ZONE_ORDER.indexOf(cr.id) === -1) STUDY_ZONE_ORDER.push(cr.id);
+              if (DRAWER_MENU_ORDER.indexOf(cr.id) === -1) DRAWER_MENU_ORDER.push(cr.id);
+            }
+          });
+        }
+
+        if (adminConfig.routeOverrides && typeof adminConfig.routeOverrides === 'object') {
+          Object.keys(adminConfig.routeOverrides).forEach(function (rid) {
+            if (rid === 'search' || rid === 'downloads') return;
+            var ov = adminConfig.routeOverrides[rid];
+            var target = routes[rid];
+            if (target && ov) {
+              if (typeof ov.url === 'string' && ov.url.trim()) {
+                var u = ov.url.trim();
+                if (useSameOriginProxy && adminConfig.useVercelProxy !== false && u.indexOf('stream.aryavidya.cc') !== -1) {
+                  u = u.replace(/^https?:\/\/stream\.aryavidya\.cc\/?/i, '/av-app');
+                }
+                target.url = u;
+              }
+              if (typeof ov.hidden === 'boolean') target.hidden = ov.hidden;
+              if (typeof ov.maintenance === 'boolean') target.maintenance = ov.maintenance;
+              if (typeof ov.cropTop === 'number' && !isNaN(ov.cropTop)) target.cropTop = ov.cropTop;
+              if (typeof ov.label === 'string' && ov.label.trim()) target.label = ov.label.trim();
+            }
+          });
+        }
+      }
+
+      // 7. SAME-ORIGIN DOM CLEANER, 404 GUARD & VIDEO PLAYBACK HOOK
+      // Because /av-app and /play.php are rewritten by vercel.json on the same domain,
+      // we can directly access iframe.contentWindow & iframe.contentDocument!
+      function injectSameOriginIframeCleaner(iframe) {
+        if (!iframe) return;
+        try {
+          var win = iframe.contentWindow;
+          var doc = iframe.contentDocument || (win && win.document);
+          if (!doc) return;
+
+          // Safety Guard: If /av-app ever returns a 404 page, seamlessly fall back to direct URL
+          var bodyTxt = (doc.body && doc.body.innerText) ? doc.body.innerText : '';
+          if (
+            (doc.title && doc.title.indexOf('404') !== -1) ||
+            bodyTxt.indexOf('NOT_FOUND') !== -1 ||
+            bodyTxt.indexOf("This page doesn't exist") !== -1
+          ) {
+            if (useSameOriginProxy) {
+              useSameOriginProxy = false;
+              applyOverridesToRoutes();
+              var fallbackR = routes[activeRouteId] || routes.batches;
+              forceNavigateMasterIframe(fallbackR.url, false);
+            }
+            return;
+          }
+
+          // Spoof frameElement & referrer inside the iframe window so play.php passes verification
+          if (win && !win.__adityaPatched) {
+            win.__adityaPatched = true;
+            try {
+              Object.defineProperty(win, 'frameElement', {
+                get: function () { return null; },
+                configurable: true
+              });
+            } catch (e) {}
+            try {
+              Object.defineProperty(doc, 'referrer', {
+                get: function () { return 'https://stream.aryavidya.cc/'; },
+                configurable: true
+              });
+            } catch (e) {}
+
+            // Hook window.open & fetch inside iframe so any absolute stream.aryavidya.cc URL stays Same-Origin!
+            try {
+              var origOpen = win.open;
+              win.open = function (url, target, features) {
+                if (typeof url === 'string' && url.indexOf('https://stream.aryavidya.cc') === 0) {
+                  url = url.replace('https://stream.aryavidya.cc', '');
+                }
+                return origOpen.call(win, url, target, features);
+              };
+            } catch (e) {}
+
+            try {
+              var origFetch = win.fetch;
+              if (origFetch) {
+                win.fetch = function (input, init) {
+                  if (typeof input === 'string' && input.indexOf('https://stream.aryavidya.cc') === 0) {
+                    input = input.replace('https://stream.aryavidya.cc', '');
+                  }
+                  return origFetch.call(win, input, init);
+                };
+              }
+            } catch (e) {}
+          }
+
+          if (doc.head && !doc.getElementById('aditya-same-origin-shield')) {
+            var st = doc.createElement('style');
+            st.id = 'aditya-same-origin-shield';
+            st.textContent =
+              '[role="dialog"], .swal2-container {' +
+              '  display: none !important; opacity: 0 !important; pointer-events: none !important;' +
+              '}';
+            doc.head.appendChild(st);
+          }
+
+          // Rewrite any internal play.php iframes or links to stay on Same-Origin
+          var childFrames = doc.querySelectorAll('iframe');
+          for (var f = 0; f < childFrames.length; f++) {
+            var fSrc = childFrames[f].getAttribute('src') || '';
+            if (fSrc.indexOf('https://stream.aryavidya.cc/') === 0) {
+              childFrames[f].setAttribute('src', fSrc.replace('https://stream.aryavidya.cc', ''));
+            }
+            try {
+              var cw = childFrames[f].contentWindow;
+              if (cw && !cw.__adityaChildPatched) {
+                cw.__adityaChildPatched = true;
+                Object.defineProperty(cw, 'frameElement', { get: function () { return null; }, configurable: true });
+              }
+            } catch (e) {}
+          }
+
+          var links = doc.querySelectorAll('a[href*="stream.aryavidya.cc"]');
+          for (var a = 0; a < links.length; a++) {
+            var h = links[a].getAttribute('href') || '';
+            links[a].setAttribute('href', h.replace('https://stream.aryavidya.cc', ''));
+          }
+
+          // Auto-dismiss any internal "Maybe later" button
+          var allBtns = doc.querySelectorAll('button, a, span, div');
+          for (var i = 0; i < allBtns.length; i++) {
+            var txt = (allBtns[i].textContent || '').trim().toLowerCase();
+            if (txt === 'maybe later') {
+              allBtns[i].click();
+              dismissIframeCommunityShield();
+            }
+          }
+        } catch (e) {
+          // Cross-origin fallback
+        }
+      }
+
+      // Direct Same-Origin Search Input Trigger (Opens search input box on 1st click!)
+      function tryAutoOpenInternalSearchInput(iframe) {
+        if (!iframe) return false;
+        try {
+          var doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+          if (!doc) return false;
+
+          var existingInp = doc.querySelector('input[type="search"], input[placeholder*="Search" i]');
+          if (existingInp) {
+            existingInp.focus();
+            return true;
+          }
+
+          var headerBtns = doc.querySelectorAll('header button, nav button, button');
+          for (var i = 0; i < headerBtns.length; i++) {
+            var b = headerBtns[i];
+            var html = b.innerHTML || '';
+            if (html.indexOf('circle') !== -1 && (html.indexOf('16.65') !== -1 || html.indexOf('21') !== -1)) {
+              b.click();
+              setTimeout(function () {
+                try {
+                  var inp = doc.querySelector('input[type="search"], input[placeholder*="Search" i], header input');
+                  if (inp) inp.focus();
+                } catch (err) {}
+              }, 80);
+              return true;
+            }
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      // 8. PRO FOCUS TIMER
+      var focusMode        = '25';
+      var focusBaseMinutes = 25;
+      var focusSecondsLeft = 25 * 60;
+      var focusRunning     = false;
+      var focusIntervalId  = null;
+      var focusElapsedSec  = 0;
+
+      function getStudyMinsToday() {
+        try {
+          return Number(localStorage.getItem(KEY_STUDY_MINS_TODAY) || 0);
+        } catch (e) {
+          return 0;
+        }
+      }
+
+      function addStudyMinToday() {
+        try {
+          var cur = getStudyMinsToday() + 1;
+          localStorage.setItem(KEY_STUDY_MINS_TODAY, String(cur));
+          renderFocusTimerUI();
+        } catch (e) {}
+      }
+
+      function formatFocusClock(totalSec) {
+        var s = Math.max(0, Math.floor(totalSec));
+        var h = Math.floor(s / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        if (h > 0) {
+          return (
+            (h < 10 ? '0' + h : h) + ':' +
+            (m < 10 ? '0' + m : m) + ':' +
+            (sec < 10 ? '0' + sec : sec)
+          );
+        }
+        return (m < 10 ? '0' + m : m) + ':' + (sec < 10 ? '0' + sec : sec);
+      }
+
+      function renderFocusTimerUI() {
+        var clk      = document.getElementById('focusClockDisplay');
+        var btn      = document.getElementById('focusToggleBtn');
+        var btnLbl   = document.getElementById('focusToggleBtnLabel');
+        var statTxt  = document.getElementById('focusTodayStatText');
+        var cap      = document.getElementById('focusStatusCaption');
+        var minusBtn = document.getElementById('focusMinus5Btn');
+        var plusBtn  = document.getElementById('focusPlus5Btn');
+
+        if (clk) clk.textContent = formatFocusClock(focusSecondsLeft);
+        if (btn) btn.classList.toggle('running', focusRunning);
+        if (btnLbl) btnLbl.textContent = focusRunning ? 'Pause' : 'Start Focus';
+        if (statTxt) statTxt.textContent = 'Today: ' + getStudyMinsToday() + 'm';
+
+        var isStopwatch = (focusMode === '0');
+        if (minusBtn) minusBtn.style.visibility = isStopwatch ? 'hidden' : 'visible';
+        if (plusBtn) plusBtn.style.visibility  = isStopwatch ? 'hidden' : 'visible';
+
+        if (cap) {
+          if (focusRunning) {
+            cap.textContent = isStopwatch
+              ? 'Stopwatch active — every minute counts toward your daily goal'
+              : 'Focus session active — stay distraction-free';
+          } else {
+            cap.textContent = isStopwatch
+              ? 'Track open-ended lecture & revision time'
+              : ('Target: ' + focusBaseMinutes + ' minutes of uninterrupted study');
+          }
+        }
+      }
+
+      function selectFocusMode(modeStr) {
+        focusMode = String(modeStr);
+        focusRunning = false;
+        clearInterval(focusIntervalId);
+        focusElapsedSec = 0;
+
+        var customRow = document.getElementById('focusCustomRow');
+        var customInp = document.getElementById('focusCustomMinInp');
+
+        document.querySelectorAll('.focus-mode-btn').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-fmode') === focusMode);
+        });
+
+        if (focusMode === 'custom') {
+          if (customRow) customRow.classList.add('show');
+          var cMins = customInp ? Math.max(1, Math.min(360, Number(customInp.value || 45))) : 45;
+          focusBaseMinutes = cMins;
+          focusSecondsLeft = cMins * 60;
+        } else {
+          if (customRow) customRow.classList.remove('show');
+          var mins = Number(focusMode || 0);
+          focusBaseMinutes = mins;
+          focusSecondsLeft = mins * 60;
+        }
+
+        renderFocusTimerUI();
+      }
+
+      function stepFocusMinutes(deltaMins) {
+        if (focusMode === '0') return;
+        focusRunning = false;
+        clearInterval(focusIntervalId);
+        var nextMins = Math.max(5, Math.min(360, focusBaseMinutes + deltaMins));
+        focusBaseMinutes = nextMins;
+        focusSecondsLeft = nextMins * 60;
+        var customInp = document.getElementById('focusCustomMinInp');
+        if (customInp) customInp.value = String(nextMins);
+        renderFocusTimerUI();
+      }
+
+      function toggleFocusTimer() {
+        focusRunning = !focusRunning;
+        clearInterval(focusIntervalId);
+        if (focusRunning) {
+          focusIntervalId = setInterval(function () {
+            focusElapsedSec++;
+            if (focusElapsedSec % 60 === 0) {
+              addStudyMinToday();
+            }
+            if (focusMode === '0') {
+              focusSecondsLeft++;
+            } else {
+              if (focusSecondsLeft > 0) {
+                focusSecondsLeft--;
+              } else {
+                focusRunning = false;
+                clearInterval(focusIntervalId);
+                showStudioToast('Focus Session Completed!');
+              }
+            }
+            renderFocusTimerUI();
+          }, 1000);
+        }
+        renderFocusTimerUI();
+      }
+
+      function refreshDownloadsStorageQuota() {
+        try {
+          if (navigator.storage && navigator.storage.estimate) {
+            navigator.storage.estimate().then(function (est) {
+              var usedMB = ((est.usage || 0) / (1024 * 1024)).toFixed(1);
+              var lbl = document.getElementById('dlStorageLabel');
+              if (lbl) {
+                lbl.textContent = ' | ' + (usedMB === '0.0' ? '0' : usedMB) + ' MB used (Free: 10 GB)';
+              }
+            }).catch(function () {});
+          }
+        } catch (e) {}
+      }
+
+      // 9. STRICT 25-HOUR KEY ENGINE + SHORTENER AUTO-RETURN
+      function getDevicePrint() {
+        var str = [navigator.userAgent || '', screen.width || 0, screen.height || 0].join('|');
+        var h = 2166136261;
+        for (var i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        return 'fp_' + (h >>> 0).toString(16);
+      }
+
+      function checkKeySession() {
+        if (!adminConfig.keySystemEnabled) {
+          return { active: true, expiresAt: Date.now() + 90000000 };
+        }
+        try {
+          var raw = localStorage.getItem(KEY_SESSION_24);
+          if (!raw) return { active: false, expiresAt: 0 };
+          var sess = JSON.parse(raw);
+          if (!sess || sess.fp !== getDevicePrint()) return { active: false, expiresAt: 0 };
+          if (Number(sess.epoch || 1) !== Number(adminConfig.keyEpochVersion || 1)) return { active: false, expiresAt: 0 };
+
+          if (sess.viaCode) {
+            if (!adminConfig.secretCodeEnabled) {
+              localStorage.removeItem(KEY_SESSION_24);
+              return { active: false, expiresAt: 0 };
+            }
+            if (Number(sess.codeEpoch || 1) !== Number(adminConfig.secretCodeEpoch || 1)) {
+              localStorage.removeItem(KEY_SESSION_24);
+              return { active: false, expiresAt: 0 };
+            }
+          }
+
+          if (Date.now() >= Number(sess.expiresAt || 0)) {
+            localStorage.removeItem(KEY_SESSION_24);
+            return { active: false, expiresAt: 0 };
+          }
+          return { active: true, expiresAt: Number(sess.expiresAt) };
+        } catch (e) {
+          return { active: false, expiresAt: 0 };
+        }
+      }
+
+      function activate24HourKey(unlockedViaCode) {
+        var hours = Math.max(1, Number(adminConfig.keyValidityHours) || 25);
+        var durationMs = hours * 3600 * 1000;
+        var payload = {
+          fp: getDevicePrint(),
+          grantedAt: Date.now(),
+          expiresAt: Date.now() + durationMs,
+          epoch: Number(adminConfig.keyEpochVersion || 1),
+          viaCode: !!unlockedViaCode,
+          codeEpoch: Number(adminConfig.secretCodeEpoch || 1)
+        };
+        try {
+          localStorage.setItem(KEY_SESSION_24, JSON.stringify(payload));
+          localStorage.removeItem(KEY_HANDSHAKE);
+        } catch (e) {}
+      }
+
+      function openKeyResetModal() {
+        var modal = document.getElementById('keyResetModalBackdrop');
+        if (!modal) return;
+        modal.classList.add('show');
+        pushAppStepHistory('modal_key_reset');
+      }
+
+      function closeKeyResetModal() {
+        var modal = document.getElementById('keyResetModalBackdrop');
+        if (modal) modal.classList.remove('show');
+      }
+
+      function resetStudentKeyToGate() {
+        closeKeyResetModal();
+        try {
+          localStorage.removeItem(KEY_SESSION_24);
+          localStorage.removeItem(KEY_HANDSHAKE);
+          localStorage.removeItem(KEY_ADMIN_AUTH);
+        } catch (e) {}
+
+        var st1  = document.getElementById('vedOpenStage');
+        var st2  = document.getElementById('testukKeyCard');
+        var gate = document.getElementById('keyGateOverlay');
+        var btn  = document.getElementById('genKeyBtn');
+        var lbl  = document.getElementById('genKeyBtnLabel');
+        var err  = document.getElementById('keyGateErr');
+
+        if (btn) btn.classList.remove('redirecting');
+        if (lbl) lbl.textContent = 'Generate Access Key';
+        if (err) err.textContent = '';
+        if (st1) st1.style.display = 'none';
+        if (st2) st2.classList.add('show');
+        if (gate) gate.classList.add('active');
+        if (masterIframe) masterIframe.style.display = 'none';
+
+        showStudioToast('Key Reset! Generate or Enter Access Code');
+      }
+
+      function verifyStudentSecretCode() {
+        var inp = document.getElementById('studentSecretCodeInp');
+        var err = document.getElementById('keyGateErr');
+        if (!inp) return;
+
+        if (!adminConfig.secretCodeEnabled) {
+          if (err) err.textContent = 'Access Code unlock is currently disabled by Admin.';
+          return;
+        }
+
+        var entered = String(inp.value || '').trim();
+        var master  = String(adminConfig.secretAccessCode || '').trim();
+
+        if (!entered) {
+          if (err) err.textContent = 'Please enter a valid Access Code.';
+          return;
+        }
+
+        if (master && entered.toLowerCase() === master.toLowerCase()) {
+          if (err) err.textContent = '';
+          inp.value = '';
+          try { inp.blur(); } catch (e) {}
+          var hrs = Math.max(1, Number(adminConfig.keyValidityHours) || 25);
+          activate24HourKey(true);
+          tickKeyCountdown();
+          showStudioToast('Access Code Verified! Unlocked for ' + hrs + ' Hours');
+        } else {
+          if (err) err.textContent = 'Invalid Access Code! Please check or click Generate Access Key.';
+        }
+      }
+
+      function verifyShortenerReturn() {
+        try {
+          var params = new URLSearchParams(window.location.search || '');
+          var hashStr = String(window.location.hash || '');
+          var hasExplicitVerifyParam = (
+            params.get('verify_key') === 'ADITYA24H' ||
+            params.get('verify_key') === '1' ||
+            hashStr.indexOf('verify_key=ADITYA24H') !== -1 ||
+            hashStr.indexOf('verify_key=1') !== -1
+          );
+
+          var rawHs = localStorage.getItem(KEY_HANDSHAKE);
+          if (!hasExplicitVerifyParam && !rawHs) return;
+
+          if (hasExplicitVerifyParam) {
+            try {
+              window.history.replaceState({}, document.title, window.location.pathname + '#/home');
+            } catch (e) {}
+          }
+
+          if (!rawHs) {
+            showKeyError('Direct bypass link blocked! Please click Generate Access Key first.');
+            return;
+          }
+
+          var hs = JSON.parse(rawHs);
+          var elapsed = (Date.now() - Number(hs.startedAt || 0)) / 1000;
+          var minWait = Math.max(8, Number(adminConfig.minWaitSeconds || 15));
+
+          if (hs.fp !== getDevicePrint()) {
+            showKeyError('Invalid device session. Generate your key on this device.');
+            return;
+          }
+
+          if (elapsed >= minWait && elapsed < 10800) {
+            var hrs = Math.max(1, Number(adminConfig.keyValidityHours) || 25);
+            activate24HourKey(false);
+            tickKeyCountdown();
+            showStudioToast('Access Key Unlocked Automatically for ' + hrs + ' Hours!');
+            return;
+          }
+
+          if (hasExplicitVerifyParam && elapsed < minWait) {
+            showKeyError('Steps skipped too fast (' + Math.ceil(minWait - elapsed) + 's left). Complete verification properly.');
+          }
+        } catch (e) {}
+      }
+
+      function showKeyError(msg) {
+        var st1 = document.getElementById('vedOpenStage');
+        var st2 = document.getElementById('testukKeyCard');
+        var err = document.getElementById('keyGateErr');
+        if (st1) st1.style.display = 'none';
+        if (st2) st2.classList.add('show');
+        if (err) err.textContent = msg;
+      }
+
+      function triggerShortenerRedirect() {
+        var btn = document.getElementById('genKeyBtn');
+        var lbl = document.getElementById('genKeyBtnLabel');
+        var err = document.getElementById('keyGateErr');
+        if (err) err.textContent = '';
+
+        try {
+          localStorage.setItem(KEY_HANDSHAKE, JSON.stringify({
+            fp: getDevicePrint(),
+            startedAt: Date.now()
+          }));
+        } catch (e) {}
+
+        if (btn) btn.classList.add('redirecting');
+        if (lbl) lbl.textContent = 'Redirecting to Verification...';
+
+        var url = String(adminConfig.shortenerUrl || '').trim();
+        setTimeout(function () {
+          if (url && url.indexOf('http') === 0) {
+            window.location.href = url;
+          } else {
+            activate24HourKey(false);
+            tickKeyCountdown();
+          }
+        }, 400);
+      }
+
+      function formatClock(ms) {
+        var s = Math.max(0, Math.floor(ms / 1000));
+        var h = Math.floor(s / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        return (
+          (h < 10 ? '0' + h : h) + ':' +
+          (m < 10 ? '0' + m : m) + ':' +
+          (sec < 10 ? '0' + sec : sec)
+        );
+      }
+
+      var hasBootedMasterIframe = false;
+
+      function tickKeyCountdown() {
+        var st = checkKeySession();
+        var gate = document.getElementById('keyGateOverlay');
+        var timerVal = document.getElementById('hdrKeyTimerVal');
+        var modalClock = document.getElementById('keyResetModalClock');
+
+        if (isAdminAuthed()) {
+          if (gate && gate.classList.contains('active')) {
+            gate.classList.remove('active');
+          }
+          if (!hasBootedMasterIframe) {
+            hasBootedMasterIframe = true;
+            bootSingleMasterIframe();
+          }
+          if (!st.active) {
+            if (timerVal) timerVal.textContent = 'ADMIN';
+            if (modalClock) modalClock.textContent = 'ADMIN';
+            return;
+          }
+        }
+
+        if (!st.active) {
+          if (gate && !gate.classList.contains('active')) {
+            if (isVideoPlayerActive) {
+              isVideoPlayerActive = false;
+              document.body.classList.remove('video-player-active');
+            }
+            gate.classList.add('active');
+            if (masterIframe) masterIframe.style.display = 'none';
+          }
+          if (timerVal) timerVal.textContent = '00:00:00';
+          if (modalClock) modalClock.textContent = '00:00:00';
+          return;
+        }
+
+        if (gate && gate.classList.contains('active')) {
+          gate.classList.remove('active');
+          if (activeRouteId !== 'home' && activeRouteId !== 'downloads') {
+            showMasterIframeForRoute(activeRouteId, false);
+          }
+        }
+
+        if (!hasBootedMasterIframe) {
+          hasBootedMasterIframe = true;
+          bootSingleMasterIframe();
+        }
+
+        if (!adminConfig.keySystemEnabled) {
+          if (timerVal) timerVal.textContent = 'FREE ACCESS';
+          if (modalClock) modalClock.textContent = 'FREE ACCESS';
+          return;
+        }
+
+        var rem = st.expiresAt - Date.now();
+        var formatted = formatClock(rem);
+        if (timerVal) timerVal.textContent = formatted;
+        if (modalClock) modalClock.textContent = formatted;
+      }
+
+      // 10. SEAMLESS LIVE SEARCH ENGINE (ZERO CLIPPING OF FIRST LETTERS!)
+      var isRealSearchOpen   = false;
+      var isRealSearchTyping = false;
+      var keyboardWasOpen    = false;
+      var baseViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      function showBrandedLoader(durationMs, customText) {
+        var loader = document.getElementById('stageLoader');
+        var txt    = document.getElementById('stageLoaderText');
+        if (!loader) return;
+        if (txt) txt.textContent = customText || 'Loading Aditya Study...';
+        loader.classList.add('show');
+        clearTimeout(window.__brandedLoaderT);
+        window.__brandedLoaderT = setTimeout(function () {
+          loader.classList.remove('show');
+          if (txt) txt.textContent = 'Loading Aditya Study...';
+        }, durationMs || 1400);
+      }
+
+      function forceNavigateMasterIframe(targetUrl, wasInDeepPage) {
+        if (!masterIframe || !targetUrl) return;
+        lastParentSrcAssignTime = Date.now();
+        lastLoadedRouteUrl = targetUrl;
+
+        if (wasInDeepPage || isVideoPlayerActive || iframeNavigatedDeep) {
+          iframeNavigatedDeep = false;
+          masterIframe.src = 'about:blank';
+          setTimeout(function () {
+            if (!masterIframe) return;
+            lastParentSrcAssignTime = Date.now();
+            masterIframe.src = targetUrl;
+          }, 30);
+        } else {
+          iframeNavigatedDeep = false;
+          masterIframe.src = targetUrl;
+        }
+      }
+
+      function openRealSearchMode() {
+        if (!checkKeySession().active && !isAdminAuthed()) {
+          tickKeyCountdown();
+          return;
+        }
+
+        var needsHardReset = (
+          isVideoPlayerActive ||
+          iframeNavigatedDeep ||
+          activeRouteId !== 'batches' ||
+          lastLoadedRouteUrl !== routes.batches.url
+        );
+
+        if (isVideoPlayerActive) {
+          isVideoPlayerActive = false;
+          document.body.classList.remove('video-player-active');
+        }
+
+        if (activeRouteId !== 'batches') {
+          navigateRoute('batches', true);
+        }
+
+        if (needsHardReset && masterIframe) {
+          showBrandedLoader(1400, 'Loading Aditya Study...');
+          forceNavigateMasterIframe(routes.batches.url, true);
+        }
+
+        dismissIframeCommunityShield();
+
+        isRealSearchOpen   = true;
+        isRealSearchTyping = false;
+        keyboardWasOpen    = false;
+        baseViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+        var mask      = document.getElementById('realSearchMaskOverlay');
+        var bnavS     = document.getElementById('bnavSearchBtn');
+        var bcCatcher = document.getElementById('invisibleBreadcrumbHomeCatcher');
+        var favInter  = document.getElementById('favBrowseInterceptor');
+
+        if (bnavS) bnavS.classList.add('active');
+        if (bcCatcher) bcCatcher.classList.remove('show');
+        if (favInter) favInter.classList.remove('show');
+
+        if (masterIframe) {
+          masterIframe.classList.add('search-mode-active');
+          masterIframe.style.top = '0px';
+          masterIframe.style.height = 'calc(100% + 84px)';
+          masterIframe.style.display = 'block';
+          injectSameOriginIframeCleaner(masterIframe);
+        }
+
+        if (mask) {
+          mask.classList.remove('typing-open');
+          mask.classList.add('show');
+        }
+
+        // On Same-Origin (/av-app), automatically click the internal search button so the input box opens right away!
+        if (masterIframe && tryAutoOpenInternalSearchInput(masterIframe)) {
+          isRealSearchTyping = true;
+          if (mask) mask.classList.add('typing-open');
+        } else {
+          try {
+            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+              document.activeElement.blur();
+            }
+            window.focus();
+          } catch (e) {}
+        }
+
+        pushAppStepHistory('search_open');
+      }
+
+      function closeRealSearchMode(selectedBatchFromList) {
+        if (!isRealSearchOpen) return;
+        isRealSearchOpen   = false;
+        isRealSearchTyping = false;
+        keyboardWasOpen    = false;
+
+        var mask  = document.getElementById('realSearchMaskOverlay');
+        var bnavS = document.getElementById('bnavSearchBtn');
+
+        if (mask) {
+          mask.classList.remove('show', 'typing-open');
+        }
+        if (bnavS) {
+          bnavS.classList.remove('active');
+        }
+
+        if (masterIframe) {
+          masterIframe.classList.remove('search-mode-active');
+          var curR = routes[activeRouteId] || routes.batches;
+          applyCropClasses(masterIframe, curR);
+        }
+
+        if (selectedBatchFromList && activeRouteId !== 'home' && activeRouteId !== 'downloads') {
+          showBrandedLoader(1300, 'Loading Aditya Study...');
+        }
+      }
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function () {
+          if (!isRealSearchOpen) {
+            baseViewportHeight = window.visualViewport.height;
+            return;
+          }
+          var curH = window.visualViewport.height;
+          if (curH < baseViewportHeight - 85) {
+            keyboardWasOpen = true;
+            if (!isRealSearchTyping) {
+              isRealSearchTyping = true;
+              var mask = document.getElementById('realSearchMaskOverlay');
+              if (mask) mask.classList.add('typing-open');
+            }
+          } else if (keyboardWasOpen && curH >= baseViewportHeight - 40) {
+            keyboardWasOpen = false;
+            setTimeout(function () {
+              closeRealSearchMode(true);
+            }, 60);
+          }
+        });
+      }
+
+      // 11. UPGRADED NOTIFICATION CENTER
+      var activeNotifFilter = 'all';
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function getSeenNotifIds() {
+        try {
+          var raw = localStorage.getItem(KEY_SEEN_NOTIF_IDS);
+          if (raw) {
+            var arr = JSON.parse(raw);
+            if (Array.isArray(arr)) return arr;
+          }
+        } catch (e) {}
+        return [];
+      }
+
+      function markAllNotifsSeen() {
+        try {
+          var list = Array.isArray(adminConfig.notifications) ? adminConfig.notifications : [];
+          var ids = list.map(function (n, idx) { return String(n.id || ('idx_' + idx)); });
+          localStorage.setItem(KEY_SEEN_NOTIF_IDS, JSON.stringify(ids));
+        } catch (e) {}
+      }
+
+      function getCategoryIconAndStyle(cat) {
+        var c = String(cat || 'Announcement');
+        if (c === 'Test') {
+          return {
+            bg: 'rgba(245, 158, 11, 0.14)',
+            color: '#D97706',
+            svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+          };
+        }
+        if (c === 'Class') {
+          return {
+            bg: 'rgba(16, 185, 129, 0.14)',
+            color: '#059669',
+            svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+          };
+        }
+        return {
+          bg: 'rgba(59, 130, 246, 0.12)',
+          color: '#2563EB',
+          svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+        };
+      }
+
+      function renderNotificationsUI() {
+        var list  = Array.isArray(adminConfig.notifications) ? adminConfig.notifications : [];
+        var badge = document.getElementById('hdrNotifBadge');
+        var pill  = document.getElementById('notifModalCountPill');
+        var mount = document.getElementById('notifListMount');
+
+        var seenIds = getSeenNotifIds();
+        var unreadCount = 0;
+        list.forEach(function (n, idx) {
+          var nid = String(n.id || ('idx_' + idx));
+          if (seenIds.indexOf(nid) === -1) unreadCount++;
+        });
+
+        if (badge) {
+          badge.textContent = String(unreadCount);
+          badge.classList.toggle('show', unreadCount > 0);
+        }
+
+        if (pill) {
+          pill.textContent = unreadCount > 0 ? (unreadCount + ' New') : (list.length + ' Updates');
+        }
+
+        if (!mount) return;
+
+        var filtered = list.filter(function (n) {
+          if (activeNotifFilter === 'all') return true;
+          var cat = String(n.category || n.tag || 'Announcement');
+          return cat.toLowerCase() === activeNotifFilter.toLowerCase();
+        });
+
+        if (!filtered.length) {
+          mount.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text-muted);font-size:13px;">No notifications in this category.</div>';
+          return;
+        }
+
+        mount.innerHTML = filtered.map(function (n, idx) {
+          var nid = String(n.id || ('idx_' + idx));
+          var isUnread = seenIds.indexOf(nid) === -1;
+          var cat = String(n.category || n.tag || 'Announcement');
+          var ic = getCategoryIconAndStyle(cat);
+
+          var imgHtml = n.image
+            ? '<img src="' + String(n.image).replace(/"/g, '&quot;') + '" class="notif-item-img" alt="Update" />'
+            : '';
+          var linkBtn = n.link
+            ? '<a href="' + String(n.link).replace(/"/g, '&quot;') + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold-main);font-size:10.5px;font-weight:800;text-decoration:none;">Open ↗</a>'
+            : '';
+          var newPill = isUnread
+            ? '<span style="padding:2px 7px;border-radius:999px;background:var(--gold-bg);color:var(--gold-main);font-size:9.5px;font-weight:800;">NEW</span>'
+            : '';
+
+          return (
+            '<div class="notif-rich-card' + (isUnread ? ' unread' : '') + '">' +
+              '<div class="notif-icon-sq" style="background:' + ic.bg + ';color:' + ic.color + ';">' + ic.svg + '</div>' +
+              '<div style="flex:1;min-width:0;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:4px;">' +
+                  '<span style="font-size:13.5px;font-weight:800;color:var(--text-main);">' + escapeHtml(n.title || 'Update') + '</span>' +
+                  newPill +
+                '</div>' +
+                '<p style="font-size:12px;color:var(--text-sub);line-height:1.5;white-space:pre-line;">' + escapeHtml(n.body || '') + '</p>' +
+                imgHtml +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:9px;">' +
+                  '<span style="font-size:10.5px;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;">' + escapeHtml(n.time || 'Recent') + '</span>' +
+                  '<div style="display:flex;align-items:center;gap:6px;">' +
+                    linkBtn +
+                    '<span style="padding:3px 9px;border-radius:7px;background:var(--bg-subtle);border:1px solid var(--border-light);color:var(--text-sub);font-size:10.5px;font-weight:700;">' + escapeHtml(cat) + '</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      function openNotificationsModal() {
+        renderNotificationsUI();
+        markAllNotifsSeen();
+        var badge = document.getElementById('hdrNotifBadge');
+        if (badge) badge.classList.remove('show');
+        var modal = document.getElementById('notifModalBackdrop');
+        if (modal) modal.classList.add('show');
+        pushAppStepHistory('modal_notif');
+      }
+
+      // 12. 1-CLICK PASS-THROUGH COMMUNITY POPUP SHIELD & PRECISION SEARCH FOCUS
+      var commShieldDismissed = false;
+      try {
+        commShieldDismissed = sessionStorage.getItem(KEY_IFRAME_COMM_DISMISSED) === '1';
+      } catch (e) {}
+
+      function showIframeCommunityShieldIfNeeded() {
+        var shield = document.getElementById('iframeCommShield');
+        if (!shield) return;
+        if (commShieldDismissed || activeRouteId === 'home' || activeRouteId === 'downloads' || isRealSearchOpen || isVideoPlayerActive) {
+          shield.classList.remove('show');
+          return;
+        }
+        try {
+          if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+            document.activeElement.blur();
+          }
+          window.focus();
+        } catch (e) {}
+        shield.classList.add('show');
+      }
+
+      function dismissIframeCommunityShield() {
+        commShieldDismissed = true;
+        try {
+          sessionStorage.setItem(KEY_IFRAME_COMM_DISMISSED, '1');
+        } catch (e) {}
+        var shield = document.getElementById('iframeCommShield');
+        if (shield) shield.classList.remove('show');
+      }
+
+      function checkIframeFocusPassThrough() {
+        if (masterIframe) {
+          injectSameOriginIframeCleaner(masterIframe);
+        }
+
+        var act = document.activeElement;
+        if (!act || act.tagName !== 'IFRAME') return;
+
+        // When Search Mode is open, the ONLY exposed clickable area of the iframe is the 40px 🔍 icon!
+        // When the user taps that 🔍 icon, the iframe receives focus -> reveal the full uncut search input!
+        if (isRealSearchOpen && !isRealSearchTyping && (Date.now() - lastParentSrcAssignTime > 550)) {
+          isRealSearchTyping = true;
+          setTimeout(function () {
+            if (isRealSearchOpen) {
+              var mask = document.getElementById('realSearchMaskOverlay');
+              if (mask) mask.classList.add('typing-open');
+            }
+          }, 60);
+        }
+
+        var shield = document.getElementById('iframeCommShield');
+        if (shield && shield.classList.contains('show')) {
+          setTimeout(function () {
+            dismissIframeCommunityShield();
+          }, 50);
+        }
+      }
+
+      window.addEventListener('blur', checkIframeFocusPassThrough);
+      setInterval(checkIframeFocusPassThrough, 120);
+
+      // 13. RENDER MY STUDY ZONE & DRAWER MENU
+      function renderStudioMenus() {
+        var zoneMount = document.getElementById('studyZoneMount');
+        if (zoneMount) {
+          var tilesHtml = STUDY_ZONE_ORDER.map(function (rid) {
+            var r = routes[rid];
+            if (!r || r.hidden || !r.inStudyZone) return '';
+            return (
+              '<button type="button" class="zone-tile" data-zone-nav="' + r.id + '">' +
+                '<div class="zone-icon-box">' + (VECTOR_ICONS[r.icon] || VECTOR_ICONS.mybatches) + '</div>' +
+                '<span class="zone-tile-label">' + r.label + '</span>' +
+              '</button>'
+            );
+          }).join('');
+          zoneMount.innerHTML = tilesHtml;
+
+          zoneMount.querySelectorAll('[data-zone-nav]').forEach(function (tile) {
+            tile.onclick = function () {
+              var targetId = tile.getAttribute('data-zone-nav');
+              if (targetId === 'search') {
+                openRealSearchMode();
+              } else {
+                navigateRoute(targetId, true);
+              }
+            };
+          });
+        }
+
+        var drawerMount = document.getElementById('drawerMenuMount');
+        if (drawerMount) {
+          var navHtml = DRAWER_MENU_ORDER.map(function (rid) {
+            var r = routes[rid];
+            if (!r || r.hidden || !r.inDrawer) return '';
+            var isAct = (activeRouteId === r.id) ? ' active' : '';
+            var icKey = r.drawerIcon || r.icon || 'dashboard';
+            return (
+              '<button type="button" class="drawer-nav-item' + isAct + '" data-drawer-nav="' + r.id + '">' +
+                (VECTOR_ICONS[icKey] || VECTOR_ICONS.dashboard) +
+                '<span>' + (r.drawerLabel || r.label) + '</span>' +
+              '</button>'
+            );
+          }).join('');
+
+          navHtml +=
+            '<button type="button" class="drawer-nav-item" id="drawerAdminOpenBtn" style="margin-top:8px;border-top:1px solid var(--border-light);padding-top:14px;">' +
+              VECTOR_ICONS.shield +
+              '<span>Admin Panel</span>' +
+            '</button>';
+
+          drawerMount.innerHTML = navHtml;
+
+          drawerMount.querySelectorAll('[data-drawer-nav]').forEach(function (btn) {
+            btn.onclick = function () {
+              toggleDrawerMenu(false);
+              navigateRoute(btn.getAttribute('data-drawer-nav'), true);
+            };
+          });
+
+          var admBtn = drawerMount.querySelector('#drawerAdminOpenBtn');
+          if (admBtn) {
+            admBtn.onclick = function () {
+              toggleDrawerMenu(false);
+              openAdminPanel();
+            };
+          }
+        }
+
+        renderNotificationsUI();
+      }
+
+      // 14. SINGLE MASTER IFRAME + INSTANT LECTURE EXIT
+      var activeRouteId           = 'home';
+      var historyStack            = [];
+      var masterIframe            = null;
+      var masterIframeReady       = false;
+      var lastLoadedRouteUrl      = '';
+      var lastParentSrcAssignTime = 0;
+      var isVideoPlayerActive     = false;
+      var iframeNavigatedDeep     = false;
+      var masterBootTimestamp     = 0;
+
+      function pushAppStepHistory(stepType) {
+        try {
+          window.history.pushState(
+            { aspStep: stepType, rid: activeRouteId },
+            'Aditya Study',
+            window.location.pathname + (routes[activeRouteId] ? routes[activeRouteId].hashPath : '#/home')
+          );
+        } catch (e) {}
+      }
+
+      function setVideoPlayerActive(active) {
+        var wasActive = isVideoPlayerActive;
+        isVideoPlayerActive = !!active;
+        document.body.classList.toggle('video-player-active', isVideoPlayerActive);
+
+        if (isVideoPlayerActive && !wasActive) {
+          pushAppStepHistory('video_player');
+        }
+      }
+
+      function exitVideoPlayerCleanly() {
+        isVideoPlayerActive = false;
+        document.body.classList.remove('video-player-active');
+        showBrandedLoader(1800, 'Loading Aditya Study...');
+        if (masterIframe) {
+          var curR = routes[activeRouteId] || routes.batches;
+          applyCropClasses(masterIframe, curR);
+          forceNavigateMasterIframe(curR.url, true);
+        }
+      }
+
+      function toggleDrawerMenu(force) {
+        var d = document.getElementById('studioDrawer');
+        var b = document.getElementById('drawerBackdrop');
+        if (!d || !b) return;
+        var open = typeof force === 'boolean' ? force : !d.classList.contains('open');
+        d.classList.toggle('open', open);
+        b.classList.toggle('open', open);
+        if (open) {
+          pushAppStepHistory('drawer');
+        }
+      }
+
+      function applyCropClasses(iframe, r) {
+        if (!iframe || !r) return;
+        var bcCatcher = document.getElementById('invisibleBreadcrumbHomeCatcher');
+        var favInter  = document.getElementById('favBrowseInterceptor');
+
+        iframe.classList.remove('crop-downloads-page', 'search-mode-active');
+
+        var px = typeof r.cropTop === 'number' ? r.cropTop : 66;
+        iframe.style.top = (-px) + 'px';
+        iframe.style.height = 'calc(100% + ' + (px + 84) + 'px)';
+
+        if (bcCatcher) {
+          bcCatcher.classList.toggle('show', activeRouteId !== 'home' && activeRouteId !== 'downloads');
+        }
+        if (favInter) {
+          favInter.classList.toggle('show', activeRouteId === 'favorites' && !isRealSearchOpen && !isVideoPlayerActive);
+        }
+      }
+
+      function bootSingleMasterIframe() {
+        var stage = document.getElementById('iframesStage');
+        if (!stage || masterIframe) return;
+
+        var iframe = document.createElement('iframe');
+        iframe.className = 'stream-iframe';
+        iframe.id = 'masterStreamIframe';
+        iframe.style.display = 'none';
+
+        iframe.setAttribute(
+          'allow',
+          'autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write; web-share; storage-access'
+        );
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('webkitallowfullscreen', 'true');
+
+        var initialBootDone = false;
+
+        var markBootReady = function () {
+          if (initialBootDone) return;
+          initialBootDone = true;
+          masterIframeReady = true;
+          masterBootTimestamp = Date.now();
+          iframe.classList.add('ready');
+          injectSameOriginIframeCleaner(iframe);
+
+          if (activeRouteId !== 'home' && activeRouteId !== 'downloads') {
+            var curR = routes[activeRouteId];
+            if (curR && curR.url) {
+              if (!isRealSearchOpen) applyCropClasses(iframe, curR);
+              if (lastLoadedRouteUrl !== curR.url) {
+                forceNavigateMasterIframe(curR.url, false);
+              }
+              iframe.style.display = 'block';
+            }
+            var loader = document.getElementById('stageLoader');
+            if (loader) loader.classList.remove('show');
+            showIframeCommunityShieldIfNeeded();
+          }
+        };
+
+        var bootFallback = setTimeout(markBootReady, 3600);
+
+        iframe.onload = function () {
+          if (iframe.src === 'about:blank') return;
+
+          injectSameOriginIframeCleaner(iframe);
+
+          if (!initialBootDone) {
+            clearTimeout(bootFallback);
+            setTimeout(markBootReady, 1900);
+            return;
+          }
+
+          if (
+            activeRouteId !== 'home' &&
+            activeRouteId !== 'downloads' &&
+            !isRealSearchOpen &&
+            (Date.now() - masterBootTimestamp > 1800) &&
+            (Date.now() - lastParentSrcAssignTime > 1200) &&
+            (activeRouteId === 'batches' || activeRouteId === 'favorites' || activeRouteId === 'history')
+          ) {
+            iframeNavigatedDeep = true;
+            if (!isVideoPlayerActive && document.activeElement === iframe) {
+              setVideoPlayerActive(true);
+            }
+          }
+        };
+
+        masterIframe = iframe;
+        stage.appendChild(iframe);
+
+        applyCropClasses(iframe, routes.batches);
+        forceNavigateMasterIframe(routes.batches.url, false);
+      }
+
+      function showMasterIframeForRoute(routeId, forceReload) {
+        var r      = routes[routeId];
+        var loader = document.getElementById('stageLoader');
+        if (!r) return;
+
+        if (adminConfig.globalMaintenance || r.maintenance) {
+          if (loader) loader.classList.remove('show');
+          showStudioToast(r.label + ' is currently under maintenance');
+          navigateRoute('home', false);
+          return;
+        }
+
+        if (!masterIframe) {
+          bootSingleMasterIframe();
+        }
+
+        setVideoPlayerActive(false);
+
+        if (!isRealSearchOpen) {
+          applyCropClasses(masterIframe, r);
+        }
+        masterIframe.style.display = 'block';
+
+        if (forceReload || iframeNavigatedDeep) {
+          showBrandedLoader(1600, 'Loading Aditya Study...');
+          forceNavigateMasterIframe(r.url, true);
+          setTimeout(function () {
+            masterIframeReady = true;
+            masterIframe.classList.add('ready');
+            injectSameOriginIframeCleaner(masterIframe);
+            showIframeCommunityShieldIfNeeded();
+          }, 1600);
+          return;
+        }
+
+        var urlChanged = (lastLoadedRouteUrl !== r.url);
+        if (urlChanged) {
+          forceNavigateMasterIframe(r.url, false);
+        }
+
+        if (masterIframeReady) {
+          masterIframe.classList.add('ready');
+          injectSameOriginIframeCleaner(masterIframe);
+          if (urlChanged) {
+            showBrandedLoader(750, 'Loading Aditya Study...');
+            setTimeout(function () {
+              if (activeRouteId === routeId) {
+                showIframeCommunityShieldIfNeeded();
+              }
+            }, 780);
+          } else {
+            if (loader) loader.classList.remove('show');
+            showIframeCommunityShieldIfNeeded();
+          }
+        } else {
+          if (loader) loader.classList.add('show');
+        }
+      }
+
+      function navigateRoute(routeId, pushHist) {
+        if (!checkKeySession().active && !isAdminAuthed()) {
+          tickKeyCountdown();
+          return;
+        }
+
+        if (routeId === 'search') {
+          openRealSearchMode();
+          return;
+        }
+
+        if (isRealSearchOpen) {
+          closeRealSearchMode(false);
+        }
+
+        var wasInVideoOrDeep = (isVideoPlayerActive || iframeNavigatedDeep);
+        setVideoPlayerActive(false);
+
+        var r = routes[routeId];
+        if (!r || r.hidden) routeId = 'home';
+        r = routes[routeId];
+
+        if (r.external) {
+          window.open(r.url, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
+        var sameTabClickedAgain = (activeRouteId === routeId);
+
+        if (pushHist && !sameTabClickedAgain) {
+          historyStack.push(activeRouteId);
+          try {
+            window.history.pushState({ aspStep: 'route', rid: routeId }, 'Aditya Study', window.location.pathname + (r.hashPath || '#/home'));
+          } catch (e) {}
+        } else {
+          try {
+            window.history.replaceState({ aspStep: 'route', rid: routeId }, 'Aditya Study', window.location.pathname + (r.hashPath || '#/home'));
+          } catch (e) {}
+        }
+
+        activeRouteId = routeId;
+
+        document.body.classList.toggle('on-iframe-route', !r.native);
+
+        var homeOrb = document.getElementById('bnavHomeOrb');
+        if (homeOrb) homeOrb.classList.toggle('active', routeId === 'home');
+
+        document.querySelectorAll('.bnav-btn[data-bnav]').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-bnav') === routeId);
+        });
+
+        document.querySelectorAll('[data-drawer-nav]').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-drawer-nav') === routeId);
+        });
+
+        var homeView      = document.getElementById('studioHomeView');
+        var downloadsView = document.getElementById('studioDownloadsView');
+        var loader        = document.getElementById('stageLoader');
+        var bcCatcher     = document.getElementById('invisibleBreadcrumbHomeCatcher');
+        var favInter      = document.getElementById('favBrowseInterceptor');
+        var commShield    = document.getElementById('iframeCommShield');
+
+        if (routeId === 'home' || routeId === 'downloads' || r.native) {
+          if (routeId === 'downloads') refreshDownloadsStorageQuota();
+          if (wasInVideoOrDeep && masterIframe) {
+            forceNavigateMasterIframe(routes.batches.url, true);
+          }
+          if (homeView) homeView.classList.toggle('active', routeId === 'home');
+          if (downloadsView) downloadsView.classList.toggle('active', routeId === 'downloads');
+          if (loader) loader.classList.remove('show');
+          if (bcCatcher) bcCatcher.classList.remove('show');
+          if (favInter) favInter.classList.remove('show');
+          if (commShield) commShield.classList.remove('show');
+          if (masterIframe) masterIframe.style.display = 'none';
+          return;
+        }
+
+        if (homeView) homeView.classList.remove('active');
+        if (downloadsView) downloadsView.classList.remove('active');
+        showMasterIframeForRoute(routeId, wasInVideoOrDeep || (sameTabClickedAgain && pushHist));
+      }
+
+      // 15. UPGRADED 4-TAB MASTER ADMIN PANEL
+      var pendingNotifPhotoDataUrl = '';
+      var activeAdminTab = 'keys';
+
+      function isAdminAuthed() {
+        try {
+          return localStorage.getItem(KEY_ADMIN_AUTH) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function setAdminAuthed(val) {
+        try {
+          if (val) localStorage.setItem(KEY_ADMIN_AUTH, '1');
+          else localStorage.removeItem(KEY_ADMIN_AUTH);
+        } catch (e) {}
+      }
+
+      function openAdminPanel() {
+        try {
+          if (document.activeElement) document.activeElement.blur();
+          window.scrollTo(0, 0);
+        } catch (e) {}
+        var modal = document.getElementById('adminBackdrop');
+        if (!modal) return;
+        modal.classList.add('show');
+        pushAppStepHistory('modal_admin');
+        renderAdminPanel();
+      }
+
+      function compressNotifImage(file, cb) {
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          var img = new Image();
+          img.onload = function () {
+            var maxW = 720;
+            var w = img.width;
+            var h = img.height;
+            if (w > maxW) {
+              h = Math.round((h * maxW) / w);
+              w = maxW;
+            }
+            var canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            cb(canvas.toDataURL('image/jpeg', 0.78));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderAdminPanel(statusMsg) {
+        var modal = document.getElementById('adminBackdrop');
+        if (!modal) return;
+
+        if (!isAdminAuthed()) {
+          modal.innerHTML = [
+            '<div class="admin-card">',
+            '  <button type="button" id="admCloseX" style="position:absolute;top:14px;right:16px;background:rgba(255,255,255,0.08);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-weight:800;">✕</button>',
+            '  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">',
+            '    <div style="width:40px;height:40px;border-radius:12px;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);display:flex;align-items:center;justify-content:center;color:#818CF8;">' + VECTOR_ICONS.shield + '</div>',
+            '    <div>',
+            '      <h3 style="font-size:17px;font-weight:800;">Admin Security Gate</h3>',
+            '      <p style="font-size:11.5px;color:#94A3B8;">Authorized Personnel Only</p>',
+            '    </div>',
+            '  </div>',
+            '  <div class="adm-box">',
+            '    <label class="adm-lbl">Admin ID</label>',
+            '    <input type="text" id="admUserInp" class="adm-field" placeholder="Enter Admin ID" autocomplete="off" spellcheck="false" />',
+            '    <label class="adm-lbl">Security Key</label>',
+            '    <input type="password" id="admPassInp" class="adm-field" placeholder="Enter Security Key" autocomplete="new-password" />',
+            '    <div id="admErrText" style="color:#F87171;font-size:12px;font-weight:700;min-height:18px;margin-bottom:8px;"></div>',
+            '    <button type="button" id="admLoginSubmit" style="width:100%;padding:13px;border-radius:11px;background:linear-gradient(90deg,#4F46E5,#7C3AED);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">Unlock Admin Console</button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+
+          modal.querySelector('#admCloseX').onclick = function () { modal.classList.remove('show'); };
+          var submitLogin = function () {
+            var u = String(modal.querySelector('#admUserInp').value || '').trim().toLowerCase();
+            var p = String(modal.querySelector('#admPassInp').value || '').trim();
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+              setAdminAuthed(true);
+              activate24HourKey(false);
+              tickKeyCountdown();
+              renderAdminPanel('Admin Connected Permanently');
+            } else {
+              modal.querySelector('#admErrText').textContent = 'Access Denied: Invalid Credentials';
+            }
+          };
+          modal.querySelector('#admLoginSubmit').onclick = submitLogin;
+          modal.querySelector('#admPassInp').onkeyup = function (e) { if (e.key === 'Enter') submitLogin(); };
+          return;
+        }
+
+        var destCallbackUrl = window.location.origin + window.location.pathname + '?verify_key=ADITYA24H';
+
+        var existingNotifsHtml = (adminConfig.notifications || []).map(function (n, idx) {
+          return (
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,0.38);border:1px solid rgba(255,255,255,0.06);border-radius:9px;margin-bottom:6px;gap:8px;">' +
+              '<div style="min-width:0;flex:1;">' +
+                '<div style="font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">[' + escapeHtml(n.category || n.tag || 'Notice') + '] ' + escapeHtml(n.title || 'Notice') + (n.image ? ' 🖼️' : '') + '</div>' +
+                '<div style="font-size:10.5px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(n.body || '') + '</div>' +
+              '</div>' +
+              '<button type="button" class="adm-del-notif" data-nidx="' + idx + '" style="padding:5px 9px;border-radius:7px;background:rgba(239,68,68,0.22);border:none;color:#FCA5A5;font-size:10.5px;font-weight:800;cursor:pointer;">Delete</button>' +
+            '</div>'
+          );
+        }).join('');
+
+        var routeRows = Object.keys(routes).map(function (rk) {
+          var r = routes[rk];
+          if (!r || r.native || r.isSearchTrigger) return '';
+          var cropVal = typeof r.cropTop === 'number' ? r.cropTop : 66;
+          return [
+            '<div style="background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:11px;padding:10px;margin-bottom:8px;">',
+            '  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:6px;flex-wrap:wrap;">',
+            '    <span style="font-size:13px;font-weight:800;color:#fff;">' + escapeHtml(r.label) + '</span>',
+            '    <div style="display:flex;gap:5px;">',
+            '      <button type="button" class="adm-hide-btn" data-rid="' + r.id + '" style="padding:4px 9px;border-radius:6px;border:none;font-size:10.5px;font-weight:800;cursor:pointer;background:' + (r.hidden ? 'rgba(239,68,68,0.25);color:#FCA5A5;' : 'rgba(16,185,129,0.2);color:#6EE7B7;') + '">' + (r.hidden ? 'Hidden' : 'Visible') + '</button>',
+            '      <button type="button" class="adm-maint-btn" data-rid="' + r.id + '" style="padding:4px 9px;border-radius:6px;border:none;font-size:10.5px;font-weight:800;cursor:pointer;background:' + (r.maintenance ? 'rgba(245,158,11,0.25);color:#FCD34D;' : 'rgba(255,255,255,0.08);color:#CBD5E1;') + '">' + (r.maintenance ? 'Maint ON' : 'Live') + '</button>',
+            '    </div>',
+            '  </div>',
+            '  <input type="text" class="adm-field adm-r-url" data-rid="' + r.id + '" value="' + String(r.url || '').replace(/"/g, '&quot;') + '" style="margin-bottom:6px;font-size:11.5px;padding:7px 9px;" />',
+            '  <div style="display:flex;justify-content:space-between;align-items:center;">',
+            '    <span style="font-size:10.5px;color:#94A3B8;">Top Header Crop (px):</span>',
+            '    <input type="number" class="adm-field adm-r-crop" data-rid="' + r.id + '" value="' + cropVal + '" style="width:76px;margin:0;padding:4px 7px;font-size:11.5px;text-align:center;" />',
+            '  </div>',
+            '</div>'
+          ].join('');
+        }).join('');
+
+        modal.innerHTML = [
+          '<div class="admin-card">',
+          '  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">',
+          '    <div>',
+          '      <div style="font-size:16px;font-weight:800;">Aditya Study Master Console</div>',
+          '      <div style="font-size:11px;color:#34D399;font-weight:700;">' + (statusMsg || '● Instant Cloud Sync Active') + '</div>',
+          '    </div>',
+          '    <div style="display:flex;gap:6px;">',
+          '      <button type="button" id="admLogoutBtn" style="padding:6px 10px;border-radius:8px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#FCA5A5;font-size:11px;font-weight:800;cursor:pointer;">Logout</button>',
+          '      <button type="button" id="admCloseX" style="background:rgba(255,255,255,0.08);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-weight:800;">✕</button>',
+          '    </div>',
+          '  </div>',
+
+          '  <div class="adm-tabs-bar">',
+          '    <button type="button" class="adm-tab-btn' + (activeAdminTab === 'keys' ? ' active' : '') + '" data-atab="keys">🔑 Key &amp; Code</button>',
+          '    <button type="button" class="adm-tab-btn' + (activeAdminTab === 'notifs' ? ' active' : '') + '" data-atab="notifs">🔔 Broadcast</button>',
+          '    <button type="button" class="adm-tab-btn' + (activeAdminTab === 'routes' ? ' active' : '') + '" data-atab="routes">🧭 Routes</button>',
+          '    <button type="button" class="adm-tab-btn' + (activeAdminTab === 'settings' ? ' active' : '') + '" data-atab="settings">⚙️ Settings</button>',
+          '  </div>',
+
+          // TAB 1: KEY & SECRET ACCESS CODE
+          '  <div class="adm-tab-pane" style="display:' + (activeAdminTab === 'keys' ? 'block' : 'none') + ';">',
+          '    <div class="adm-box" style="border-color:rgba(16,185,129,0.35);">',
+          '      <label class="adm-lbl" style="color:#6EE7B7;">★ Secret Student Access Code (Direct Unlock)</label>',
+          '      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,0.35);border-radius:8px;margin-bottom:8px;">',
+          '        <span style="font-size:12px;font-weight:700;">Enable Access Code Box on Key Gate:</span>',
+          '        <input type="checkbox" id="admSecretCodeToggle" ' + (adminConfig.secretCodeEnabled ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;" />',
+          '      </div>',
+          '      <label style="font-size:11px;color:#94A3B8;display:block;margin-bottom:4px;">Set Secret Access Code:</label>',
+          '      <div style="display:flex;gap:6px;margin-bottom:8px;">',
+          '        <input type="text" id="admSecretCodeValInp" class="adm-field" value="' + String(adminConfig.secretAccessCode || '').replace(/"/g, '&quot;') + '" placeholder="e.g. ADITYA25" style="margin:0;font-weight:800;letter-spacing:0.05em;color:#34D399;" />',
+          '        <button type="button" id="admRandomCodeBtn" style="padding:0 11px;border-radius:8px;background:rgba(99,102,241,0.25);border:1px solid rgba(99,102,241,0.45);color:#C7D2FE;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">🎲 Random</button>',
+          '      </div>',
+          '      <button type="button" id="admResetCodeUsersBtn" style="width:100%;padding:9px;border-radius:8px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#FCA5A5;font-size:11.5px;font-weight:800;cursor:pointer;">🔒 Reset / Expire All Secret Code Users Immediately</button>',
+          '    </div>',
+
+          '    <div class="adm-box">',
+          '      <label class="adm-lbl">Shortener &amp; Key Gate Setup</label>',
+          '      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,0.35);border-radius:8px;margin-bottom:10px;">',
+          '        <span style="font-size:12px;font-weight:700;">Require Key Gate for Students:</span>',
+          '        <input type="checkbox" id="admKeyToggle" ' + (adminConfig.keySystemEnabled ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;" />',
+          '      </div>',
+          '      <label style="font-size:11px;color:#94A3B8;display:block;margin-bottom:4px;">Step A — Copy Destination URL &amp; Shorten it:</label>',
+          '      <div style="display:flex;gap:6px;margin-bottom:10px;">',
+          '        <input type="text" readonly value="' + destCallbackUrl + '" class="adm-field" style="margin:0;font-size:11px;color:#38BDF8;" />',
+          '        <button type="button" id="admCopyDest" style="padding:0 12px;border-radius:8px;background:#0284C7;border:none;color:#fff;font-size:11.5px;font-weight:800;cursor:pointer;">Copy</button>',
+          '      </div>',
+          '      <label style="font-size:11px;color:#94A3B8;display:block;margin-bottom:4px;">Step B — Paste Your Shortened URL Here:</label>',
+          '      <input type="text" id="admShortUrlInp" class="adm-field" value="' + String(adminConfig.shortenerUrl || '').replace(/"/g, '&quot;') + '" placeholder="https://vplink.in/..." />',
+          '      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">',
+          '        <button type="button" id="admUnlockSelf" style="padding:9px;border-radius:8px;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.4);color:#6EE7B7;font-size:11.5px;font-weight:800;cursor:pointer;">Unlock My Device</button>',
+          '        <button type="button" id="admExpireAllBtn" style="padding:9px;border-radius:8px;background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.4);color:#FCD34D;font-size:11.5px;font-weight:800;cursor:pointer;">Expire All Student Keys</button>',
+          '      </div>',
+          '    </div>',
+          '  </div>',
+
+          // TAB 2: BROADCAST NOTIFICATIONS
+          '  <div class="adm-tab-pane" style="display:' + (activeAdminTab === 'notifs' ? 'block' : 'none') + ';">',
+          '    <div class="adm-box">',
+          '      <label class="adm-lbl">Send Live Notification (With Category, Photo &amp; Link)</label>',
+          '      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">',
+          '        <select id="admNotifCategory" class="adm-field" style="margin:0;">',
+          '          <option value="Announcement">📢 Announcement</option>',
+          '          <option value="Class">🎥 Live Class</option>',
+          '          <option value="Test">📝 Test / Quiz</option>',
+          '        </select>',
+          '        <input type="text" id="admNotifTimeLbl" class="adm-field" placeholder="Time (e.g. Just now)" value="Just now" style="margin:0;" />',
+          '      </div>',
+          '      <input type="text" id="admNotifTitle" class="adm-field" placeholder="Notification Title" />',
+          '      <textarea id="admNotifBody" class="adm-field" rows="2" placeholder="Write notification message..."></textarea>',
+          '      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">',
+          '        <input type="text" id="admNotifImgUrl" class="adm-field" placeholder="Paste Image URL or Upload Photo ->" style="margin:0;flex:1;" />',
+          '        <label style="padding:9px 11px;border-radius:9px;background:rgba(99,102,241,0.25);border:1px solid rgba(99,102,241,0.5);color:#C7D2FE;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">',
+          '          📷 Photo <input type="file" id="admNotifFileInp" accept="image/*" style="display:none;" />',
+          '        </label>',
+          '      </div>',
+          '      <input type="text" id="admNotifLink" class="adm-field" placeholder="Optional Button Link (e.g. https://t.me/...)" />',
+          '      <button type="button" id="admSendNotifBtn" style="width:100%;padding:11px;border-radius:9px;background:linear-gradient(90deg,#F59E0B,#D97706);border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:12px;">🔔 Broadcast Notification Live</button>',
+                 existingNotifsHtml,
+          '    </div>',
+          '  </div>',
+
+          // TAB 3: ROUTES & HEADER CROP
+          '  <div class="adm-tab-pane" style="display:' + (activeAdminTab === 'routes' ? 'block' : 'none') + ';">',
+          '    <div class="adm-box">',
+          '      <label class="adm-lbl">Manage Portal Sections, Links &amp; Cropping</label>',
+                 routeRows,
+          '    </div>',
+          '  </div>',
+
+          // TAB 4: PORTAL SETTINGS
+          '  <div class="adm-tab-pane" style="display:' + (activeAdminTab === 'settings' ? 'block' : 'none') + ';">',
+          '    <div class="adm-box">',
+          '      <label class="adm-lbl">Global Portal Controls &amp; Video Rewrite</label>',
+          '      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,0.35);border-radius:8px;margin-bottom:8px;">',
+          '        <span style="font-size:12px;font-weight:700;color:#6EE7B7;">Use Vercel Same-Origin Rewrite (/av-app):</span>',
+          '        <input type="checkbox" id="admProxyToggle" ' + (adminConfig.useVercelProxy !== false ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;" />',
+          '      </div>',
+          '      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,0.35);border-radius:8px;margin-bottom:8px;">',
+          '        <span style="font-size:12px;font-weight:700;color:#FCA5A5;">Force Global Maintenance Mode:</span>',
+          '        <input type="checkbox" id="admGlobalMaintToggle" ' + (adminConfig.globalMaintenance ? 'checked' : '') + ' style="width:18px;height:18px;cursor:pointer;" />',
+          '      </div>',
+          '      <label style="font-size:11px;color:#94A3B8;display:block;margin-bottom:4px;">Official Telegram Channel Link:</label>',
+          '      <input type="text" id="admTgUrlInp" class="adm-field" value="' + String(adminConfig.telegramUrl || '').replace(/"/g, '&quot;') + '" />',
+          '      <label style="font-size:11px;color:#94A3B8;display:block;margin-bottom:4px;">How to Generate Key Tutorial Link:</label>',
+          '      <input type="text" id="admTutUrlInp" class="adm-field" value="' + String(adminConfig.tutorialUrl || '').replace(/"/g, '&quot;') + '" />',
+          '      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">',
+          '        <div>',
+          '          <label style="font-size:10.5px;color:#94A3B8;display:block;margin-bottom:4px;">Key Validity (Hours):</label>',
+          '          <input type="number" id="admValHoursInp" class="adm-field" value="' + Number(adminConfig.keyValidityHours || 25) + '" />',
+          '        </div>',
+          '        <div>',
+          '          <label style="font-size:10.5px;color:#94A3B8;display:block;margin-bottom:4px;">Min Anti-Bypass Wait (s):</label>',
+          '          <input type="number" id="admMinWaitInp" class="adm-field" value="' + Number(adminConfig.minWaitSeconds || 15) + '" />',
+          '        </div>',
+          '      </div>',
+          '    </div>',
+          '  </div>',
+
+          '  <button type="button" id="admSaveAllBtn" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(90deg,#10B981,#059669);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(16,185,129,0.35);">Save &amp; Push Live to All Students</button>',
+          '</div>'
+        ].join('');
+
+        modal.querySelector('#admCloseX').onclick = function () { modal.classList.remove('show'); };
+        modal.querySelector('#admLogoutBtn').onclick = function () {
+          setAdminAuthed(false);
+          renderAdminPanel();
+        };
+
+        modal.querySelectorAll('[data-atab]').forEach(function (tbtn) {
+          tbtn.onclick = function () {
+            readModalInputs(modal);
+            activeAdminTab = tbtn.getAttribute('data-atab');
+            renderAdminPanel();
+          };
+        });
+
+        var randBtn = modal.querySelector('#admRandomCodeBtn');
+        if (randBtn) {
+          randBtn.onclick = function () {
+            var code = 'ADITYA' + Math.floor(1000 + Math.random() * 9000);
+            modal.querySelector('#admSecretCodeValInp').value = code;
+          };
+        }
+
+        var resetCodeBtn = modal.querySelector('#admResetCodeUsersBtn');
+        if (resetCodeBtn) {
+          resetCodeBtn.onclick = async function () {
+            readModalInputs(modal);
+            adminConfig.secretCodeEpoch = Number(adminConfig.secretCodeEpoch || 1) + 1;
+            await pushAdminLive(adminConfig);
+            renderAdminPanel('All Secret Code sessions expired!');
+            showStudioToast('All Code Users Reset!');
+          };
+        }
+
+        var fileInp = modal.querySelector('#admNotifFileInp');
+        if (fileInp) {
+          fileInp.onchange = function (ev) {
+            var file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            compressNotifImage(file, function (dataUrl) {
+              pendingNotifPhotoDataUrl = dataUrl;
+              modal.querySelector('#admNotifImgUrl').value = '[Photo Attached Ready]';
+              showStudioToast('Photo Attached Ready!');
+            });
+          };
+        }
+
+        modal.querySelector('#admSendNotifBtn').onclick = async function () {
+          readModalInputs(modal);
+          var cat    = String(modal.querySelector('#admNotifCategory').value || 'Announcement');
+          var tLbl   = String(modal.querySelector('#admNotifTimeLbl').value || 'Just now').trim();
+          var title  = String(modal.querySelector('#admNotifTitle').value || '').trim();
+          var body   = String(modal.querySelector('#admNotifBody').value || '').trim();
+          var rawImg = String(modal.querySelector('#admNotifImgUrl').value || '').trim();
+          var link   = String(modal.querySelector('#admNotifLink').value || '').trim();
+
+          if (!title && !body) {
+            showStudioToast('Enter notification title or message');
+            return;
+          }
+
+          var finalImg = (rawImg === '[Photo Attached Ready]') ? pendingNotifPhotoDataUrl : rawImg;
+          pendingNotifPhotoDataUrl = '';
+
+          if (!Array.isArray(adminConfig.notifications)) adminConfig.notifications = [];
+          adminConfig.notifications.unshift({
+            id: 'n_' + Date.now(),
+            title: title || 'Aditya Study Update',
+            body: body,
+            image: finalImg,
+            link: link,
+            category: cat,
+            tag: cat,
+            time: tLbl || 'Just now'
+          });
+
+          await pushAdminLive(adminConfig);
+          renderAdminPanel('Notification Broadcasted Live!');
+          showStudioToast('Notification Sent to All Students!');
+        };
+
+        modal.querySelectorAll('.adm-del-notif').forEach(function (btn) {
+          btn.onclick = async function () {
+            readModalInputs(modal);
+            var idx = Number(btn.getAttribute('data-nidx'));
+            if (Array.isArray(adminConfig.notifications)) {
+              adminConfig.notifications.splice(idx, 1);
+            }
+            await pushAdminLive(adminConfig);
+            renderAdminPanel('Notification Deleted');
+          };
+        });
+
+        modal.querySelector('#admUnlockSelf').onclick = function () {
+          activate24HourKey(false);
+          tickKeyCountdown();
+          showStudioToast('Access Key Activated on This Device');
+        };
+
+        modal.querySelector('#admCopyDest').onclick = function () {
+          try {
+            navigator.clipboard.writeText(destCallbackUrl);
+            showStudioToast('Destination URL Copied!');
+          } catch (e) {}
+        };
+
+        modal.querySelector('#admExpireAllBtn').onclick = async function () {
+          readModalInputs(modal);
+          adminConfig.keyEpochVersion = Number(adminConfig.keyEpochVersion || 1) + 1;
+          await pushAdminLive(adminConfig);
+          renderAdminPanel('All student keys expired immediately');
+        };
+
+        modal.querySelectorAll('.adm-hide-btn').forEach(function (btn) {
+          btn.onclick = async function () {
+            readModalInputs(modal);
+            var rid = btn.getAttribute('data-rid');
+            adminConfig.routeOverrides[rid] = adminConfig.routeOverrides[rid] || {};
+            adminConfig.routeOverrides[rid].hidden = !routes[rid].hidden;
+            await pushAdminLive(adminConfig);
+            renderAdminPanel(rid + ' visibility updated');
+          };
+        });
+
+        modal.querySelectorAll('.adm-maint-btn').forEach(function (btn) {
+          btn.onclick = async function () {
+            readModalInputs(modal);
+            var rid = btn.getAttribute('data-rid');
+            adminConfig.routeOverrides[rid] = adminConfig.routeOverrides[rid] || {};
+            adminConfig.routeOverrides[rid].maintenance = !routes[rid].maintenance;
+            await pushAdminLive(adminConfig);
+            renderAdminPanel(rid + ' maintenance updated');
+          };
+        });
+
+        modal.querySelector('#admSaveAllBtn').onclick = async function () {
+          readModalInputs(modal);
+          await pushAdminLive(adminConfig);
+          renderAdminPanel('All Changes Saved & Pushed Live!');
+          showStudioToast('Saved & Pushed Live!');
+        };
+      }
+
+      function readModalInputs(modal) {
+        if (!modal) return;
+        var kt = modal.querySelector('#admKeyToggle');
+        if (kt) adminConfig.keySystemEnabled = !!kt.checked;
+
+        var sct = modal.querySelector('#admSecretCodeToggle');
+        if (sct) adminConfig.secretCodeEnabled = !!sct.checked;
+
+        var scv = modal.querySelector('#admSecretCodeValInp');
+        if (scv) adminConfig.secretAccessCode = String(scv.value || '').trim();
+
+        var pt = modal.querySelector('#admProxyToggle');
+        if (pt) adminConfig.useVercelProxy = !!pt.checked;
+
+        var gm = modal.querySelector('#admGlobalMaintToggle');
+        if (gm) adminConfig.globalMaintenance = !!gm.checked;
+
+        var su = modal.querySelector('#admShortUrlInp');
+        if (su) adminConfig.shortenerUrl = String(su.value || '').trim();
+
+        var tu = modal.querySelector('#admTutUrlInp');
+        if (tu) adminConfig.tutorialUrl = String(tu.value || '').trim();
+
+        var tgu = modal.querySelector('#admTgUrlInp');
+        if (tgu) adminConfig.telegramUrl = String(tgu.value || '').trim();
+
+        var vh = modal.querySelector('#admValHoursInp');
+        if (vh) adminConfig.keyValidityHours = Math.max(1, Number(vh.value || 25));
+
+        var mw = modal.querySelector('#admMinWaitInp');
+        if (mw) adminConfig.minWaitSeconds = Math.max(5, Number(mw.value || 15));
+
+        modal.querySelectorAll('.adm-r-url').forEach(function (inp) {
+          var rid = inp.getAttribute('data-rid');
+          adminConfig.routeOverrides[rid] = adminConfig.routeOverrides[rid] || {};
+          adminConfig.routeOverrides[rid].url = String(inp.value || '').trim();
+        });
+
+        modal.querySelectorAll('.adm-r-crop').forEach(function (inp) {
+          var rid = inp.getAttribute('data-rid');
+          adminConfig.routeOverrides[rid] = adminConfig.routeOverrides[rid] || {};
+          adminConfig.routeOverrides[rid].cropTop = Number(inp.value || 66);
+        });
+      }
+
+      // 16. INSTANT LIGHTWEIGHT CLOUD SYNC (Tiny Ntfy Ping + 1-Read Firestore Fetch)
+      async function pushAdminLive(cfg) {
+        cfg.versionTs = Date.now();
+        adminConfig = Object.assign({}, adminConfig, cfg);
+        try { localStorage.setItem(KEY_ADMIN_CFG, JSON.stringify(adminConfig)); } catch (e) {}
+
+        if (bcChannel) {
+          try { bcChannel.postMessage(adminConfig); } catch (e) {}
+        }
+
+        applyOverridesToRoutes();
+        syncSecretCodeBoxVisibility();
+        renderStudioMenus();
+        tickKeyCountdown();
+
+        var str = JSON.stringify(adminConfig);
+
+        try {
+          await fetch(FIRESTORE_URL, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fields: {
+                payload: { stringValue: str },
+                updatedAt: { integerValue: String(adminConfig.versionTs) }
+              }
+            })
+          });
+        } catch (e) {}
+
+        try {
+          await fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+            method: 'POST',
+            body: JSON.stringify({ ts: adminConfig.versionTs })
+          });
+        } catch (e) {}
+      }
+
+      function fetchLatestFromFirestore() {
+        try {
+          fetch(FIRESTORE_URL + '?t=' + Date.now())
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              if (d && d.fields && d.fields.payload && d.fields.payload.stringValue) {
+                applyRemoteState(JSON.parse(d.fields.payload.stringValue));
+              }
+            }).catch(function () {});
+        } catch (e) {}
+      }
+
+      function applyRemoteState(remote) {
+        if (!remote || typeof remote !== 'object') return;
+        if (Number(remote.versionTs || 0) <= Number(adminConfig.versionTs || 0)) return;
+        adminConfig = Object.assign({}, adminConfig, remote);
+        adminConfig.routeOverrides = remote.routeOverrides || {};
+        adminConfig.customRoutes = remote.customRoutes || {};
+        if (!Array.isArray(adminConfig.notifications)) adminConfig.notifications = [];
+        try { localStorage.setItem(KEY_ADMIN_CFG, JSON.stringify(adminConfig)); } catch (e) {}
+        applyOverridesToRoutes();
+        syncSecretCodeBoxVisibility();
+        renderStudioMenus();
+        tickKeyCountdown();
+      }
+
+      function startLiveSync() {
+        if (bcChannel) {
+          bcChannel.onmessage = function (ev) {
+            if (ev && ev.data) applyRemoteState(ev.data);
+          };
+        }
+
+        window.addEventListener('storage', function (ev) {
+          if (ev.key === KEY_ADMIN_CFG && ev.newValue) {
+            try { applyRemoteState(JSON.parse(ev.newValue)); } catch (e) {}
+          }
+        });
+
+        fetchLatestFromFirestore();
+
+        if (typeof EventSource !== 'undefined') {
+          try {
+            var es = new EventSource('https://ntfy.sh/' + NTFY_TOPIC + '/sse');
+            es.onmessage = function (ev) {
+              try {
+                var d = JSON.parse(ev.data);
+                if (d && d.message) {
+                  var msgObj = JSON.parse(d.message);
+                  if (msgObj && Number(msgObj.ts || 0) > Number(adminConfig.versionTs || 0)) {
+                    fetchLatestFromFirestore();
+                  } else if (msgObj && msgObj.versionTs) {
+                    applyRemoteState(msgObj);
+                  }
+                }
+              } catch (e) {}
+            };
+          } catch (e) {}
+        }
+      }
+
+      function showStudioToast(msg) {
+        var t = document.getElementById('studioToast');
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(window.__stToast);
+        window.__stToast = setTimeout(function () { t.classList.remove('show'); }, 2600);
+      }
+
+      // 17. BIND ALL EVENTS & 1-STEP GLOBAL BACK HANDLER
+      function bindAllEvents() {
+        document.getElementById('vedOpenBtn').onclick = function () {
+          document.getElementById('vedOpenStage').style.display = 'none';
+          document.getElementById('testukKeyCard').classList.add('show');
+        };
+        document.getElementById('genKeyBtn').onclick = triggerShortenerRedirect;
+        document.getElementById('howKeyBtn').onclick = function () {
+          window.open(adminConfig.tutorialUrl || adminConfig.telegramUrl, '_blank', 'noopener,noreferrer');
+        };
+        document.getElementById('gateAdminOpenLink').onclick = openAdminPanel;
+        document.getElementById('hdrAdminAvatar').onclick = openAdminPanel;
+
+        window.addEventListener('pageshow', verifyShortenerReturn);
+        window.addEventListener('focus', verifyShortenerReturn);
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') {
+            verifyShortenerReturn();
+          }
+        });
+
+        document.getElementById('hdrKeyTimerBadge').onclick = openKeyResetModal;
+        document.getElementById('keyResetCloseX').onclick = closeKeyResetModal;
+        document.getElementById('cancelResetKeyBtn').onclick = closeKeyResetModal;
+        document.getElementById('confirmResetKeyBtn').onclick = resetStudentKeyToGate;
+
+        var vidExitBtn = document.getElementById('videoBackExitHotspot');
+        if (vidExitBtn) {
+          vidExitBtn.onclick = exitVideoPlayerCleanly;
+        }
+
+        var favInter = document.getElementById('favBrowseInterceptor');
+        if (favInter) {
+          favInter.onclick = function (ev) {
+            if (ev) ev.stopPropagation();
+            navigateRoute('batches', true);
+          };
+        }
+
+        document.querySelectorAll('.focus-mode-btn').forEach(function (btn) {
+          btn.onclick = function () {
+            selectFocusMode(btn.getAttribute('data-fmode') || '25');
+          };
+        });
+        document.getElementById('focusMinus5Btn').onclick = function () {
+          stepFocusMinutes(-5);
+        };
+        document.getElementById('focusPlus5Btn').onclick = function () {
+          stepFocusMinutes(5);
+        };
+        document.getElementById('focusCustomApplyBtn').onclick = function () {
+          var inp = document.getElementById('focusCustomMinInp');
+          var mins = Math.max(1, Math.min(360, Number(inp ? inp.value : 45) || 45));
+          if (inp) inp.value = String(mins);
+          focusRunning = false;
+          clearInterval(focusIntervalId);
+          focusBaseMinutes = mins;
+          focusSecondsLeft = mins * 60;
+          renderFocusTimerUI();
+          showStudioToast('Custom Focus Timer Set to ' + mins + ' Minutes');
+        };
+        document.getElementById('focusToggleBtn').onclick = toggleFocusTimer;
+        document.getElementById('focusResetBtn').onclick = function () {
+          selectFocusMode(focusMode);
+        };
+        var homeSearchPill = document.getElementById('homeQuickSearchPill');
+        if (homeSearchPill) {
+          homeSearchPill.onclick = openRealSearchMode;
+        }
+
+        var codeBtn = document.getElementById('studentSecretCodeBtn');
+        var codeInp = document.getElementById('studentSecretCodeInp');
+        if (codeBtn) codeBtn.onclick = verifyStudentSecretCode;
+        if (codeInp) {
+          codeInp.onkeydown = function (ev) {
+            if (ev.key === 'Enter') verifyStudentSecretCode();
+          };
+        }
+
+        // Search Armor Controls
+        document.getElementById('hdrSearchBtn').onclick = function () {
+          if (isRealSearchOpen) closeRealSearchMode(false);
+          else openRealSearchMode();
+        };
+        document.getElementById('bnavSearchBtn').onclick = function () {
+          if (isRealSearchOpen) closeRealSearchMode(false);
+          else openRealSearchMode();
+        };
+        document.getElementById('rsmCloseSearchBtn').onclick = function () {
+          closeRealSearchMode(false);
+        };
+        document.getElementById('rsmBottomBlur').onclick = function () {
+          closeRealSearchMode(false);
+        };
+        var rsmLeftShell = document.getElementById('rsmTopLeftShell');
+        if (rsmLeftShell) {
+          rsmLeftShell.onclick = function () {
+            if (masterIframe && tryAutoOpenInternalSearchInput(masterIframe)) {
+              isRealSearchTyping = true;
+              var mask = document.getElementById('realSearchMaskOverlay');
+              if (mask) mask.classList.add('typing-open');
+            } else {
+              showStudioToast('Tap the 🔍 icon on the right to type');
+            }
+          };
+        }
+
+        document.getElementById('hdrNotifBtn').onclick = openNotificationsModal;
+        document.getElementById('todayNotesNotifBtn').onclick = openNotificationsModal;
+        document.getElementById('notifCloseX').onclick = function () {
+          document.getElementById('notifModalBackdrop').classList.remove('show');
+        };
+        document.getElementById('notifDoneBtn').onclick = function () {
+          document.getElementById('notifModalBackdrop').classList.remove('show');
+        };
+        document.getElementById('notifMarkAllReadBtn').onclick = function () {
+          markAllNotifsSeen();
+          renderNotificationsUI();
+          showStudioToast('All notifications marked as read');
+        };
+
+        document.querySelectorAll('#notifFilterStrip [data-nfilter]').forEach(function (pill) {
+          pill.onclick = function () {
+            activeNotifFilter = pill.getAttribute('data-nfilter') || 'all';
+            document.querySelectorAll('#notifFilterStrip .notif-tab-pill').forEach(function (p) {
+              p.classList.toggle('active', p === pill);
+            });
+            renderNotificationsUI();
+          };
+        });
+
+        var ifsJoinBtn = document.getElementById('ifsJoinTgBtn');
+        if (ifsJoinBtn) {
+          ifsJoinBtn.onclick = function (ev) {
+            if (ev) ev.stopPropagation();
+            window.open(adminConfig.telegramUrl || 'https://t.me/+KcG_R4Wg1J0zMDA1', '_blank', 'noopener,noreferrer');
+          };
+        }
+
+        document.getElementById('hdrMenuBtn').onclick = function () { toggleDrawerMenu(); };
+        document.getElementById('drawerCloseBtn').onclick = function () { toggleDrawerMenu(false); };
+        document.getElementById('drawerBackdrop').onclick = function () { toggleDrawerMenu(false); };
+        document.getElementById('hdrBrandHome').onclick = function () { navigateRoute('home', true); };
+
+        document.getElementById('invisibleBreadcrumbHomeCatcher').onclick = function () {
+          navigateRoute('home', true);
+        };
+
+        document.querySelectorAll('[data-nav]').forEach(function (el) {
+          el.onclick = function () {
+            navigateRoute(el.getAttribute('data-nav'), true);
+          };
+        });
+
+        document.querySelectorAll('[data-bnav]').forEach(function (el) {
+          el.onclick = function () {
+            navigateRoute(el.getAttribute('data-bnav'), true);
+          };
+        });
+
+        document.getElementById('bnavTelegramBtn').onclick = function () {
+          window.open(adminConfig.telegramUrl || 'https://t.me/+KcG_R4Wg1J0zMDA1', '_blank', 'noopener,noreferrer');
+        };
+
+        window.addEventListener('popstate', function () {
+          var admModal = document.getElementById('adminBackdrop');
+          if (admModal && admModal.classList.contains('show')) {
+            admModal.classList.remove('show');
+            return;
+          }
+
+          var notifModal = document.getElementById('notifModalBackdrop');
+          if (notifModal && notifModal.classList.contains('show')) {
+            notifModal.classList.remove('show');
+            return;
+          }
+
+          var keyResetModal = document.getElementById('keyResetModalBackdrop');
+          if (keyResetModal && keyResetModal.classList.contains('show')) {
+            keyResetModal.classList.remove('show');
+            return;
+          }
+
+          var drawer = document.getElementById('studioDrawer');
+          if (drawer && drawer.classList.contains('open')) {
+            toggleDrawerMenu(false);
+            return;
+          }
+
+          if (isRealSearchOpen) {
+            closeRealSearchMode(false);
+            return;
+          }
+
+          if (isVideoPlayerActive || iframeNavigatedDeep) {
+            exitVideoPlayerCleanly();
+            return;
+          }
+
+          if (historyStack.length > 0) {
+            var prevRoute = historyStack.pop();
+            navigateRoute(prevRoute, false);
+          } else if (activeRouteId !== 'home') {
+            navigateRoute('home', false);
+          }
+        });
+
+        document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
+      }
+
+      function bootStudioPortal() {
+        initLogoImages(document);
+        loadAdminState();
+        verifyShortenerReturn();
+        renderStudioMenus();
+        renderFocusTimerUI();
+        refreshDownloadsStorageQuota();
+        bindAllEvents();
+        tickKeyCountdown();
+        setInterval(tickKeyCountdown, 1000);
+        startLiveSync();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootStudioPortal);
+      } else {
+        bootStudioPortal();
+      }
+    })();
+  </script>
+</body>
+</html>
